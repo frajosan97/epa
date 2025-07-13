@@ -11,6 +11,7 @@ Route::get('/events', [ApiController::class, 'events'])->name('api.events');
 Route::get('/news', [ApiController::class, 'news'])->name('api.news');
 Route::get('/gallerly', [ApiController::class, 'gallerly'])->name('api.gallerly');
 Route::post('/confirm', [ApiController::class, 'confirm'])->name('api.confirm');
+Route::post('/unsubscribe', [ApiController::class, 'unsubscribe'])->name('api.unsubscribe');
 
 Route::prefix('otp')->group(function () {
     Route::post('/send', [ApiController::class, 'send'])->name('api.otp.send');

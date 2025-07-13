@@ -81,7 +81,7 @@ class RegisteredUserController extends Controller
             'email_verified_at' => $validated['preferredChannel'] === 'email' ? now() : null,
             'password' => Hash::make($validated['idNumber']),
             'privacy_acceptance' => $validated['privacyAcceptance'],
-            'status' => 'pending',
+            'status' => 'active',
         ]);
 
         // event(new Registered($user));

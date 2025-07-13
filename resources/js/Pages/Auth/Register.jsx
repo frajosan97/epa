@@ -45,6 +45,11 @@ export default function MembershipRegistration() {
     const [confirmValue, setConfirmValue] = useState('');
     const [isCheckingMembership, setIsCheckingMembership] = useState(false);
     const [memberInfo, setMemberInfo] = useState(null);
+    const [unsubscribing, setUnsubscribing] = useState(false);
+    const [showUnsubscribeVerification, setShowUnsubscribeVerification] = useState(false);
+    const [unsubscribeOTP, setUnsubscribeOTP] = useState('');
+    const [sendingUnsubscribeOTP, setSendingUnsubscribeOTP] = useState(false);
+    const [unsubscribeOTPVerified, setUnsubscribeOTPVerified] = useState(false);
 
     // Use the location data hook
     const {
@@ -175,6 +180,112 @@ export default function MembershipRegistration() {
             setMemberInfo(null);
         } finally {
             setIsCheckingMembership(false);
+        }
+    };
+
+    const sendUnsubscribeOTP = async () => {
+        if (!memberInfo) return;
+
+        setSendingUnsubscribeOTP(true);
+
+        try {
+            const response = await axios.post(route('api.otp.send'), {
+                type: memberInfo.prefered_channel === 'email' ? 'email' : 'phone',
+                [memberInfo.prefered_channel === 'email' ? 'email' : 'phone']:
+                    memberInfo.prefered_channel === 'email' ? memberInfo.email : memberInfo.phone
+            });
+
+            if (response.data.success) {
+                toast.success(`OTP sent to your ${memberInfo.prefered_channel}`);
+            } else {
+                toast.error(response.data.message || `Failed to send OTP`);
+            }
+        } catch (error) {
+            const errorMsg = error.response?.data?.message || error.message;
+            toast.error(`Failed to send OTP: ${errorMsg}`);
+        } finally {
+            setSendingUnsubscribeOTP(false);
+        }
+    };
+
+    const verifyUnsubscribeOTP = async () => {
+        if (!unsubscribeOTP) {
+            toast.error('Please enter the OTP code');
+            return;
+        }
+
+        try {
+            const response = await axios.post(route('api.otp.verify'), {
+                [memberInfo.prefered_channel === 'email' ? 'email' : 'phone']:
+                    memberInfo.prefered_channel === 'email' ? memberInfo.email : memberInfo.phone,
+                otp: unsubscribeOTP,
+                type: memberInfo.prefered_channel === 'email' ? 'email' : 'phone'
+            });
+
+            if (response.data.success) {
+                setUnsubscribeOTPVerified(true);
+                toast.success('OTP verified successfully!');
+            } else {
+                toast.error(response.data.message || `Verification failed`);
+            }
+        } catch (error) {
+            const errorMsg = error.response?.data?.message || error.message;
+            toast.error(`Verification failed: ${errorMsg}`);
+        }
+    };
+
+    const handleUnsubscribe = async () => {
+        if (!memberInfo) return;
+
+        const result = await Swal.fire({
+            title: 'Confirm Unsubscribe',
+            text: 'Are you sure you want to unsubscribe from our membership? This action cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, unsubscribe',
+            cancelButtonText: 'No, cancel',
+            reverseButtons: true
+        });
+
+        if (!result.isConfirmed) {
+            return;
+        }
+
+        setShowUnsubscribeVerification(true);
+        await sendUnsubscribeOTP();
+    };
+
+    const confirmUnsubscribe = async () => {
+        if (!unsubscribeOTPVerified) {
+            toast.error('Please verify the OTP first');
+            return;
+        }
+
+        setUnsubscribing(true);
+
+        try {
+            const response = await axios.post(route('api.unsubscribe'), {
+                member_id: memberInfo.id,
+                otp: unsubscribeOTP,
+                verification_channel: memberInfo.prefered_channel
+            });
+
+            if (response.data.success) {
+                toast.success('You have been unsubscribed successfully');
+                setMemberInfo(null);
+                setConfirmValue('');
+                setShowUnsubscribeVerification(false);
+                setShowConfirmModal(false);
+                setUnsubscribeOTP('');
+                setUnsubscribeOTPVerified(false);
+            } else {
+                toast.error(response.data.message || 'Failed to unsubscribe');
+            }
+        } catch (error) {
+            const errorMsg = error.response?.data?.message || error.message;
+            toast.error(`Unsubscribe failed: ${errorMsg}`);
+        } finally {
+            setUnsubscribing(false);
         }
     };
 
@@ -322,7 +433,11 @@ export default function MembershipRegistration() {
                 </Form>
 
                 {/* Confirm Membership Modal */}
-                <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)}>
+                <Modal show={showConfirmModal} onHide={() => {
+                    setShowConfirmModal(false);
+                    setMemberInfo(null);
+                    setConfirmValue('');
+                }}>
                     <Modal.Header closeButton>
                         <Modal.Title>Confirm Membership</Modal.Title>
                     </Modal.Header>
@@ -360,28 +475,47 @@ export default function MembershipRegistration() {
 
                             {memberInfo && (
                                 <div className="alert alert-success border-0 border-start border-5 border-success mt-3">
-                                    <h4>Congratulations! Member Found</h4>
+                                    <h4>Member Found</h4>
                                     <hr />
                                     <p><strong>Name:</strong> <span className="text-capitalize">{`${memberInfo.sir_name} ${memberInfo.first_name} ${memberInfo.last_name}`}</span></p>
                                     <p><strong>ID Number:</strong> {memberInfo.id_number}</p>
                                     <p><strong>Phone:</strong> {memberInfo.phone}</p>
-                                    {/* <p><strong>Membership Status:</strong> {memberInfo.status}</p> */}
+                                    <p><strong>Email:</strong> {memberInfo.email}</p>
+                                    <p><strong>Preferred Channel:</strong> {memberInfo.prefered_channel}</p>
+                                    <p><strong>Membership Status:</strong> {memberInfo.status}</p>
+
+                                    <Button
+                                        variant="danger"
+                                        onClick={handleUnsubscribe}
+                                        disabled={unsubscribing}
+                                        className="mt-3 w-100"
+                                    >
+                                        {unsubscribing ? (
+                                            <>
+                                                <Spinner animation="border" size="sm" className="me-2" />
+                                                Unsubscribing...
+                                            </>
+                                        ) : (
+                                            'Unsubscribe from Membership'
+                                        )}
+                                    </Button>
                                 </div>
                             )}
                         </Form>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button
-                            variant="outline-primary-2"
+                            variant="outline-secondary"
                             onClick={() => {
                                 setShowConfirmModal(false);
                                 setMemberInfo(null);
+                                setConfirmValue('');
                             }}
                         >
                             Close
                         </Button>
                         <Button
-                            variant="primary-2"
+                            variant="primary"
                             onClick={checkMembership}
                             disabled={isCheckingMembership}
                         >
@@ -392,6 +526,91 @@ export default function MembershipRegistration() {
                                 </>
                             ) : (
                                 'Check Membership'
+                            )}
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                {/* Unsubscribe Verification Modal */}
+                <Modal show={showUnsubscribeVerification} onHide={() => {
+                    setShowUnsubscribeVerification(false);
+                    setUnsubscribeOTP('');
+                    setUnsubscribeOTPVerified(false);
+                }}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Verify Unsubscription</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form>
+                            <p className="mb-4">
+                                We've sent a verification code to your {memberInfo?.prefered_channel}.
+                                Please enter it below to confirm your unsubscription.
+                            </p>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Verification Code</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={unsubscribeOTP}
+                                    onChange={(e) => setUnsubscribeOTP(e.target.value)}
+                                    placeholder={`Enter OTP sent to your ${memberInfo?.prefered_channel}`}
+                                    disabled={unsubscribeOTPVerified}
+                                />
+                            </Form.Group>
+
+                            <div className="d-flex justify-content-between align-items-center">
+                                <Button
+                                    variant="outline-secondary"
+                                    onClick={sendUnsubscribeOTP}
+                                    disabled={sendingUnsubscribeOTP || unsubscribeOTPVerified}
+                                >
+                                    {sendingUnsubscribeOTP ? (
+                                        <>
+                                            <Spinner animation="border" size="sm" className="me-2" />
+                                            Resending...
+                                        </>
+                                    ) : (
+                                        'Resend OTP'
+                                    )}
+                                </Button>
+
+                                <Button
+                                    variant={unsubscribeOTPVerified ? 'success' : 'primary'}
+                                    onClick={verifyUnsubscribeOTP}
+                                    disabled={unsubscribeOTPVerified || !unsubscribeOTP}
+                                >
+                                    {unsubscribeOTPVerified ? (
+                                        'Verified ✓'
+                                    ) : (
+                                        'Verify OTP'
+                                    )}
+                                </Button>
+                            </div>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button
+                            variant="outline-secondary"
+                            onClick={() => {
+                                setShowUnsubscribeVerification(false);
+                                setUnsubscribeOTP('');
+                                setUnsubscribeOTPVerified(false);
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="danger"
+                            onClick={confirmUnsubscribe}
+                            disabled={!unsubscribeOTPVerified || unsubscribing}
+                        >
+                            {unsubscribing ? (
+                                <>
+                                    <Spinner animation="border" size="sm" className="me-2" />
+                                    Processing...
+                                </>
+                            ) : (
+                                'Confirm Unsubscribe'
                             )}
                         </Button>
                     </Modal.Footer>

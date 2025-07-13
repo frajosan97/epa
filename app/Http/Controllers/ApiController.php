@@ -296,7 +296,7 @@ class ApiController extends Controller
                     'date' => 'July 10, 2025',
                     'time' => '10:00 AM',
                     'location' => 'Uhuru Park, Nairobi',
-                    'image' => 'https://publish.eastleighvoice.co.ke/mugera_lock/uploads/2024/07/sab.jpeg',
+                    'image' => '15.jpeg',
                 ],
                 [
                     'id' => 2,
@@ -305,7 +305,7 @@ class ApiController extends Controller
                     'date' => 'July 22, 2025',
                     'time' => '8:00 AM',
                     'location' => 'Kakamega Golf Hotel Grounds',
-                    'image' => 'https://khusoko.com/wp-content/uploads/2020/03/A-maize-farm-in-Kenya.jpg',
+                    'image' => '20.jpeg',
                 ],
                 [
                     'id' => 3,
@@ -314,7 +314,7 @@ class ApiController extends Controller
                     'date' => 'August 5, 2025',
                     'time' => '9:00 AM',
                     'location' => 'Mombasa Showground',
-                    'image' => 'https://www.unwomen.org/sites/default/files/styles/webp_only/public/2022-10/WPS-Kenya-Mary-Mariach-Christine-Lemuya.JPG.webp?itok=DbwQaMzr',
+                    'image' => '11.jpeg',
                 ],
             ];
 
@@ -336,7 +336,7 @@ class ApiController extends Controller
                     'date' => 'July 1, 2025',
                     'time' => '10:00 AM',
                     'location' => '1st Floor Boardroom, ORPP',
-                    'image' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZRG6GNyE_Ca9dOr8uNefQiwBiY8F-XOx5Zg&s',
+                    'image' => '13.jpeg',
                     'description' => 'The Economic Patriotic Alliance (EPA) successfully participated in the membership recruitment system demonstration organized by the Office of the Registrar of Political Parties (ORPP). The team demonstrated full compliance with political party regulations, showcasing digital membership registration, member details management, and secure authentication processes.'
                 ],
                 [
@@ -346,7 +346,7 @@ class ApiController extends Controller
                     'date' => 'May 28, 2025',
                     'time' => 'Time not specified',
                     'location' => 'Party Registrar\'s Office',
-                    'image' => 'https://cdn.slidesharecdn.com/ss_thumbnails/politicalideologies-230327015630-59a4c12f-thumbnail.jpg?width=640&height=640&fit=bounds',
+                    'image' => '24.jpeg',
                     'description' => 'The party\'s manifesto and ideology were officially presented at the party registrar\'s office with many key party officials in attendance. This significant event marked a pivotal moment for the party as they outlined their vision and goals for the future.'
                 ],
                 [
@@ -356,7 +356,7 @@ class ApiController extends Controller
                     'date' => 'July 10, 2025',
                     'time' => '10:00 AM',
                     'location' => 'Uhuru Park, Nairobi',
-                    'image' => 'https://publish.eastleighvoice.co.ke/mugera_lock/uploads/2024/07/sab.jpeg',
+                    'image' => '17.jpeg',
                     'description' => 'Join us for an inspiring rally focused on engaging and empowering the youth in our national development agenda.'
                 ],
                 [
@@ -366,7 +366,7 @@ class ApiController extends Controller
                     'date' => 'July 22, 2025',
                     'time' => '8:00 AM',
                     'location' => 'Kakamega Golf Hotel Grounds',
-                    'image' => 'https://storage.googleapis.com/cgiarorg/2025/01/20240730_112806-scaled.jpg',
+                    'image' => '25.jpeg',
                     'description' => 'A forum to discuss economic development strategies and opportunities in the Western region.'
                 ],
                 [
@@ -376,7 +376,7 @@ class ApiController extends Controller
                     'date' => 'August 5, 2025',
                     'time' => '9:00 AM',
                     'location' => 'Mombasa Showground',
-                    'image' => 'https://www.unwomen.org/sites/default/files/styles/webp_only/public/2022-10/WPS-Kenya-Mary-Mariach-Christine-Lemuya.JPG.webp?itok=DbwQaMzr',
+                    'image' => '10.jpeg',
                     'description' => 'A summit dedicated to promoting women leadership and addressing gender equality in leadership roles.'
                 ]
             ];
@@ -711,6 +711,35 @@ class ApiController extends Controller
                 'success' => true,
                 'message' => 'Member found',
                 'member' => $user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing your request',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function unsubscribe(Request $request)
+    {
+        try {
+            $request->validate([
+                'member_id' => 'required|integer|exists:users,id',
+                'otp' => 'required|string|size:6',
+                'verification_channel' => 'required|in:email,phone'
+            ]);
+
+            // Find the user
+            $user = User::findOrFail($request->member_id);
+
+            // Update user status
+            $user->status = 'unsubscribed';
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'You have been successfully unsubscribed'
             ]);
         } catch (\Exception $e) {
             return response()->json([

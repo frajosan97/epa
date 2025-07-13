@@ -90,7 +90,7 @@ export default function BlogSection() {
                                 <Card className="content-card mx-2 border-0 shadow-sm">
                                     <div className="content-card-image-container">
                                         <Card.Img
-                                            src={blog.image}
+                                            src={`/storage/images/gallery/${blog.image}`}
                                             alt={blog.title}
                                             className="card-image"
                                         />

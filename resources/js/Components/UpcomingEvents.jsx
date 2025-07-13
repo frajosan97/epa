@@ -93,7 +93,7 @@ export default function UpcomingEvents() {
                                 <Card className="content-card mx-2 border-0 shadow-sm">
                                     <div className="content-card-image-container">
                                         <Card.Img
-                                            src={event.image}
+                                            src={`/storage/images/gallery/${event.image}`}
                                             alt={event.title}
                                             className="card-image"
                                         />
