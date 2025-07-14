@@ -296,7 +296,7 @@ class ApiController extends Controller
                     'date' => 'July 10, 2025',
                     'time' => '10:00 AM',
                     'location' => 'Uhuru Park, Nairobi',
-                    'image' => '15.jpeg',
+                    'image' => '14.jpeg',
                 ],
                 [
                     'id' => 2,

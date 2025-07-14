@@ -5,6 +5,7 @@
     /* Primary Colors */
     --color-primary: rgb(128, 0, 128);
     --color-primary-dark: rgb(117, 11, 113);
+    --color-secondary: green;
     --color-primary-transparent: rgba(117, 11, 113, 0.741);
     --color-accent: rgb(218, 169, 49);
     --color-white: rgb(253, 253, 254);
@@ -70,7 +71,7 @@ body {
 }
 
 .bg-primary {
-    background: var(--bg-primary)!important;
+    background: var(--bg-primary) !important;
 }
 
 /* ====================== */

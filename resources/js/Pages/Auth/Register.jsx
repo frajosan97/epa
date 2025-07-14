@@ -11,6 +11,7 @@ import PersonalInfomation from './MembershipSections/PersonalInfo';
 import LocationInformation from './MembershipSections/LocationInfo';
 import ContactInformation from './MembershipSections/ContactInfo';
 import PrivacyPolicy from './MembershipSections/PrivacyPolicy';
+import HeroBanner from '@/Components/HeroBanner';
 
 export default function MembershipRegistration() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -355,6 +356,12 @@ export default function MembershipRegistration() {
                 draggable
                 pauseOnHover
             />
+
+            {/* Hero Section */}
+            {/* <HeroBanner data={{
+                title: "Join EPA today",
+                subtitle: "Become member at EPA and enjoy plenty of benefits"
+            }} /> */}
 
             <Container className='py-5'>
                 <blockquote className='border-start border-5 border-warning p-2 rounded bg-light mb-5'>

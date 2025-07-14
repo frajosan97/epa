@@ -3,6 +3,7 @@ import AppLayout from '@/Layouts/AppLayout';
 import { Head } from '@inertiajs/react';
 import { Container, Row, Col, Card, Accordion, Badge } from 'react-bootstrap';
 import { motion } from 'framer-motion';
+import HeroBanner from '@/Components/HeroBanner';
 
 export default function FAQ() {
     const containerVariants = {
@@ -72,39 +73,10 @@ export default function FAQ() {
             <Head title="FAQs – Economic Patriotic Alliance (EPA)" />
 
             {/* Hero Section */}
-            <motion.div
-                className="hero-section"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8 }}
-            >
-                <Container>
-                    <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        variants={containerVariants}
-                        className="text-center"
-                    >
-                        <motion.h1
-                            className="display-4 fw-bold text-white mb-3"
-                            variants={itemVariants}
-                        >
-                            Frequently Asked Questions
-                        </motion.h1>
-                        <motion.p
-                            className="lead text-white mb-4"
-                            variants={itemVariants}
-                        >
-                            Quick answers to your questions about EPA
-                        </motion.p>
-                        <motion.div variants={itemVariants}>
-                            <Badge bg="light" text="dark" className="fs-6 px-3 py-2">
-                                Last Updated: {new Date().toLocaleDateString()}
-                            </Badge>
-                        </motion.div>
-                    </motion.div>
-                </Container>
-            </motion.div>
+            <HeroBanner data={{
+                title: "Frequently Asked Questions",
+                subtitle: "Quick answers to your questions about EPA",
+            }} />
 
             {/* Search Section */}
             <motion.section
@@ -135,7 +107,7 @@ export default function FAQ() {
             {/* Main Content */}
             <Container className="py-5">
                 <Row className="justify-content-center">
-                    <Col lg={10}>
+                    <Col lg={12}>
                         <motion.div
                             initial="hidden"
                             animate="visible"

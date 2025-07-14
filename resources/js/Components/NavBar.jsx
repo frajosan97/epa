@@ -16,7 +16,6 @@ export default function NavBar() {
     const navItems = [
         { href: route('/'), icon: 'bi-house-door', text: 'Home' },
         { href: route('about'), icon: 'bi-info-circle', text: 'About' },
-        { href: route('coordinator'), icon: 'bi-people', text: 'Coordinators' },
         { href: route('event'), icon: 'bi-calendar-event', text: 'Events' },
         {
             text: 'Resource',
@@ -37,12 +36,8 @@ export default function NavBar() {
                 { href: '/specialized', icon: 'bi-tools', text: 'Specialized Skills' },
             ]
         },
-        {
-            href: route('contact'),
-            icon: 'bi-telephone-fill',
-            text: 'Contact',
-            isRoute: true,
-        },
+        { href: route('careers'), icon: 'bi-briefcase', text: 'Careers' },
+        { href: route('contact'), icon: 'bi-telephone-fill', text: 'Contact', },
         {
             href: route('register'),
             icon: 'bi-person-plus',

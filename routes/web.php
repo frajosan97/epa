@@ -20,9 +20,9 @@ Route::get('/event', function () {
     return Inertia::render('Frontend/Event/Index');
 })->name('event');
 
-Route::get('/coordinator', function () {
-    return Inertia::render('Frontend/Coordinator');
-})->name('coordinator');
+Route::get('/careers', function () {
+    return Inertia::render('Frontend/Careers');
+})->name('careers');
 
 Route::prefix('resource')->group(function () {
     Route::get('/downloads', [ResourceController::class, 'downloads'])->name('resource.downloads');

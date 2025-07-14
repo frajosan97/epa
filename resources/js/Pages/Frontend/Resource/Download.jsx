@@ -7,22 +7,15 @@ import {
     BsDownload,
     BsSearch,
     BsFunnel,
-    BsClock,
     BsCalendar,
     BsFileEarmark,
-    BsHdd,
-    BsCloud,
-    BsCheckCircle,
-    BsExclamationCircle,
     BsStar,
     BsBoxArrowUpRight,
     BsWindows,
-    BsApple,
-    BsAndroid2,
-    BsUbuntu,
     BsFilter,
     BsSortDown
 } from 'react-icons/bs';
+import HeroBanner from '@/Components/HeroBanner';
 
 export default function Downloads({ downloadItems }) {
     const containerVariants = {
@@ -68,29 +61,10 @@ export default function Downloads({ downloadItems }) {
             <Head title='Downloads' />
 
             {/* Hero Section */}
-            <div className="hero-section">
-                <div className="hero-overlay bg-dark bg-opacity-50"></div>
-                <Container className="hero-content py-5">
-                    <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        variants={containerVariants}
-                    >
-                        <motion.h1
-                            className="display-4 fw-bold text-white mb-4"
-                            variants={heroVariants}
-                        >
-                            <BsDownload className="me-2" /> EPA Resources
-                        </motion.h1>
-                        <motion.p
-                            className="lead text-white mb-5"
-                            variants={heroVariants}
-                        >
-                            Access all EPA documents, tools, and resources in one place
-                        </motion.p>
-                    </motion.div>
-                </Container>
-            </div>
+            <HeroBanner data={{
+                title: "EPA Resources",
+                subtitle: "Access all EPA documents, tools, and resources in one place"
+            }} />
 
             {/* Main Content */}
             <Container className="py-5">

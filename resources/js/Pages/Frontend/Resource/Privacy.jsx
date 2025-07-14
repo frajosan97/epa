@@ -2,70 +2,24 @@ import React from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import { Head } from '@inertiajs/react';
 import { Container, Row, Col, Card, Badge } from 'react-bootstrap';
-import { motion } from 'framer-motion';
+import HeroBanner from '@/Components/HeroBanner';
 
 export default function Terms() {
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                when: "beforeChildren"
-            }
-        }
-    };
-
-    const heroVariants = {
-        hidden: { opacity: 0, y: -20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-                duration: 0.8,
-                ease: "easeOut"
-            }
-        }
-    };
 
     return (
         <AppLayout>
             <Head title="Privacy Policy & Terms" />
 
             {/* Hero Section */}
-            <div className="hero-section">
-                <div className="hero-overlay"></div>
-                <Container className="hero-content">
-                    <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        variants={containerVariants}
-                    >
-                        <motion.h1
-                            className="display-4 fw-bold text-white mb-4"
-                            variants={heroVariants}
-                        >
-                            Privacy Policy & Terms
-                        </motion.h1>
-                        <motion.p
-                            className="lead text-white mb-5"
-                            variants={heroVariants}
-                        >
-                            <p className="lead">
-                                Your trust is our priority. Learn how EPA handles your data with transparency and security.
-                            </p>
-                            <Badge bg="light" text="dark" className="mt-2">
-                                Updated: {new Date().toLocaleDateString()}
-                            </Badge>
-                        </motion.p>
-                    </motion.div>
-                </Container>
-            </div>
+            <HeroBanner data={{
+                title: "Privacy Policy & Terms",
+                subtitle: "Your trust is our priority. Learn how EPA handles your data with transparency and security.",
+            }} />
 
             {/* Main Content */}
             <Container className="py-5">
                 <Row className="justify-content-center">
-                    <Col lg={10}>
+                    <Col lg={12}>
                         <Card className="shadow-sm border-0 rounded-4 overflow-hidden mb-5">
                             <Card.Body className="p-4 p-lg-5">
                                 <div className="policy-content">

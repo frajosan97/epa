@@ -1,71 +1,25 @@
 import React from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import { Head } from '@inertiajs/react';
-import { motion } from 'framer-motion';
-import { Container } from 'react-bootstrap';
 import {
-    FaMapMarkerAlt,
-    FaEnvelope,
-    FaPhone,
     FaFacebook,
     FaTwitter,
     FaLinkedin,
     FaInstagram
 } from 'react-icons/fa';
 import '../../../css/Contact.css';
+import HeroBanner from '@/Components/HeroBanner';
 
 export default function Contact() {
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                when: "beforeChildren"
-            }
-        }
-    };
-
-    const heroVariants = {
-        hidden: { opacity: 0, y: -20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-                duration: 0.8,
-                ease: "easeOut"
-            }
-        }
-    };
-
     return (
         <AppLayout>
             <Head title="Contact Us" />
 
             {/* Hero Section */}
-            <div className="hero-section">
-                <div className="hero-overlay"></div>
-                <Container className="hero-content">
-                    <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        variants={containerVariants}
-                    >
-                        <motion.h1
-                            className="display-4 fw-bold text-white mb-4"
-                            variants={heroVariants}
-                        >
-                            Get In Touch
-                        </motion.h1>
-                        <motion.p
-                            className="lead text-white mb-5"
-                            variants={heroVariants}
-                        >
-                            We'd love to hear from you! Reach out for inquiries, collaborations, or feedback.
-                        </motion.p>
-                    </motion.div>
-                </Container>
-            </div>
+            <HeroBanner data={{
+                title: "Get In Touch",
+                subtitle: "We'd love to hear from you! Reach out for inquiries, collaborations, or feedback."
+            }} />
 
             {/* Contact Section */}
             <div className="contact-container">

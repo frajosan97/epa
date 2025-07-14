@@ -1,60 +1,19 @@
 import React from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import { Head } from '@inertiajs/react';
-import { Container, Row, Col, Card, Table, Badge } from 'react-bootstrap';
-import { motion } from 'framer-motion';
+import HeroBanner from '@/Components/HeroBanner';
+import { Badge, Card, Col, Container, Row, Table } from 'react-bootstrap';
 
 export default function About() {
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                when: "beforeChildren"
-            }
-        }
-    };
-
-    const heroVariants = {
-        hidden: { opacity: 0, y: -20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-                duration: 0.8,
-                ease: "easeOut"
-            }
-        }
-    };
-    
     return (
         <AppLayout>
             <Head title='About' />
 
-            <div className="hero-section">
-                <div className="hero-overlay"></div>
-                <Container className="hero-content">
-                    <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        variants={containerVariants}
-                    >
-                        <motion.h1
-                            className="display-4 fw-bold text-white mb-4"
-                            variants={heroVariants}
-                        >
-                            Who we are
-                        </motion.h1>
-                        <motion.p
-                            className="lead text-white mb-5"
-                            variants={heroVariants}
-                        >
-                            Discover our story and our mission.
-                        </motion.p>
-                    </motion.div>
-                </Container>
-            </div>
+            {/* Hero Section */}
+            <HeroBanner data={{
+                title: "About Us",
+                subtitle: "Learn about our mission and values"
+            }} />
 
             <Container className="py-5">
                 {/* Who We Are Section */}

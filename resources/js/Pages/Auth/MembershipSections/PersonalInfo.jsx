@@ -194,14 +194,49 @@ export default function PersonalInformation({
                                 isInvalid={!!errors.ethnicity}
                             >
                                 <option value="">Select Ethnicity</option>
-                                <option value="Kikuyu">Kikuyu</option>
-                                <option value="Luhya">Luhya</option>
-                                <option value="Kalenjin">Kalenjin</option>
-                                <option value="Luo">Luo</option>
-                                <option value="Kamba">Kamba</option>
-                                <option value="Somali">Somali</option>
-                                <option value="Kisii">Kisii</option>
-                                <option value="Other">Other</option>
+                                <option value="kikuyu">Kikuyu</option>
+                                <option value="luhya">Luhya</option>
+                                <option value="luo">Luo</option>
+                                <option value="kalenjin">Kalenjin</option>
+                                <option value="kamba">Kamba</option>
+                                <option value="kisii">Kisii</option>
+                                <option value="meru">Meru</option>
+                                <option value="maasai">Maasai</option>
+                                <option value="mijikenda">Mijikenda</option>
+                                <option value="turkana">Turkana</option>
+                                <option value="somali">Somali</option>
+                                <option value="embu">Embu</option>
+                                <option value="tait">Taita</option>
+                                <option value="taveta">Taveta</option>
+                                <option value="pokot">Pokot</option>
+                                <option value="samburu">Samburu</option>
+                                <option value="rendille">Rendille</option>
+                                <option value="borana">Borana</option>
+                                <option value="gabra">Gabra</option>
+                                <option value="orma">Orma</option>
+                                <option value="swahili">Swahili</option>
+                                <option value="tharaka">Tharaka</option>
+                                <option value="nubi">Nubi</option>
+                                <option value="kurya">Kurya</option>
+                                <option value="teso">Teso</option>
+                                <option value="suba">Suba</option>
+                                <option value="bajuni">Bajuni</option>
+                                <option value="basuba">Basuba</option>
+                                <option value="ogiek">Ogiek</option>
+                                <option value="el-molo">El Molo</option>
+                                <option value="sakuye">Sakuye</option>
+                                <option value="boni">Boni</option>
+                                <option value="burji">Burji</option>
+                                <option value="digo">Digo</option>
+                                <option value="gosha">Gosha</option>
+                                <option value="isukha">Isukha</option>
+                                <option value="khayo">Khayo</option>
+                                <option value="maragoli">Maragoli</option>
+                                <option value="tachoni">Tachoni</option>
+                                <option value="chonyi">Chonyi</option>
+                                <option value="kuria">Kuria</option>
+                                <option value="ilchamus">Ilchamus</option>
+                                <option value="other">Other</option>
                             </Form.Select>
                             <Form.Control.Feedback type="invalid">
                                 {errors.ethnicity}
@@ -214,7 +249,7 @@ export default function PersonalInformation({
                             <Form.Label>SIG Category</Form.Label>
                             {data.dob && (
                                 <small className="text-muted d-block">
-                                    Age: {age} years {age > 35 && "(Too old for Youth category)"}
+                                    Age: {age} years {age > 35 && "(You MUST be 35 years of age or below)"}
                                 </small>
                             )}
                             <div className="d-flex flex-wrap gap-3">
