@@ -1,6 +1,6 @@
 import React from 'react';
 import AppLayout from '@/Layouts/AppLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { Container, Row, Col, Card, Button, Badge, ProgressBar, Form, InputGroup, Tab, Tabs, Accordion } from 'react-bootstrap';
 import {
@@ -357,9 +357,9 @@ function DownloadCard({ item }) {
                                 </div>
                             </div>
                             <div className="d-flex flex-column align-items-end">
-                                <Button variant="primary" size="sm" className="text-nowrap mb-2">
+                                <a href={`/storage/documents/downloads/${item.url}`} className='btn btn-sm btn-primary text-nowrap mb-2' download>
                                     <BsDownload className="me-1" /> Download
-                                </Button>
+                                </a>
                                 <Button variant="outline-secondary" size="sm" className='text-nowrap'>
                                     <BsBoxArrowUpRight className="me-1" /> Details
                                 </Button>

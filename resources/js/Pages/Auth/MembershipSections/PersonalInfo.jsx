@@ -89,10 +89,10 @@ export default function PersonalInformation({
                     </Col>
 
                     <Col md={4}>
-                        <FloatingLabel controlId="sirName" label="Sur Name" className="mb-3">
+                        <FloatingLabel controlId="sirName" label="Surname" className="mb-3">
                             <Form.Control
                                 type="text"
-                                placeholder="Sur Name"
+                                placeholder="Surname"
                                 value={data.sirName}
                                 onChange={(e) => handleNameChange('sirName', e.target.value)}
                                 isInvalid={!!errors.sirName}
