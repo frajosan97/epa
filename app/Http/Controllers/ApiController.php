@@ -296,7 +296,7 @@ class ApiController extends Controller
                     'date' => 'July 10, 2025',
                     'time' => '10:00 AM',
                     'location' => 'Uhuru Park, Nairobi',
-                    'image' => '14.jpeg',
+                    'image' => '3.jpeg',
                 ],
                 [
                     'id' => 2,
@@ -305,7 +305,7 @@ class ApiController extends Controller
                     'date' => 'July 22, 2025',
                     'time' => '8:00 AM',
                     'location' => 'Kakamega Golf Hotel Grounds',
-                    'image' => '20.jpeg',
+                    'image' => '5.jpeg',
                 ],
                 [
                     'id' => 3,
@@ -314,7 +314,7 @@ class ApiController extends Controller
                     'date' => 'August 5, 2025',
                     'time' => '9:00 AM',
                     'location' => 'Mombasa Showground',
-                    'image' => '11.jpeg',
+                    'image' => '1.jpeg',
                 ],
             ];
 
@@ -336,7 +336,7 @@ class ApiController extends Controller
                     'date' => 'July 1, 2025',
                     'time' => '10:00 AM',
                     'location' => '1st Floor Boardroom, ORPP',
-                    'image' => '13.jpeg',
+                    'image' => '21.jpeg',
                     'description' => 'The Economic Patriotic Alliance (EPA) successfully participated in the membership recruitment system demonstration organized by the Office of the Registrar of Political Parties (ORPP). The team demonstrated full compliance with political party regulations, showcasing digital membership registration, member details management, and secure authentication processes.'
                 ],
                 [
@@ -376,7 +376,7 @@ class ApiController extends Controller
                     'date' => 'August 5, 2025',
                     'time' => '9:00 AM',
                     'location' => 'Mombasa Showground',
-                    'image' => '10.jpeg',
+                    'image' => '18.jpeg',
                     'description' => 'A summit dedicated to promoting women leadership and addressing gender equality in leadership roles.'
                 ]
             ];
@@ -428,94 +428,92 @@ class ApiController extends Controller
                     'image' => '5.jpeg',
                     'description' => ''
                 ],
-                [
-                    'id' => 6,
-                    'category' => 'political-rallies',
-                    'title' => 'Election Campaign Kickoff',
-                    'image' => '6.jpeg',
-                    'description' => ''
-                ],
+                // [
+                //     'id' => 6,
+                //     'category' => 'political-rallies',
+                //     'title' => 'Election Campaign Kickoff',
+                //     'image' => '6.jpeg',
+                //     'description' => ''
+                // ],
+                // [
+                //     'id' => 7,
+                //     'category' => 'community-meetings',
+                //     'title' => 'Town Hall Discussion',
+                //     'image' => '7.jpeg',
+                //     'description' => ''
+                // ],
+                // [
+                //     'id' => 8,
+                //     'category' => 'community-meetings',
+                //     'title' => 'Village Development Forum',
+                //     'image' => '8.jpeg',
+                //     'description' => ''
+                // ],
+                // [
+                //     'id' => 9,
+                //     'category' => 'community-meetings',
+                //     'title' => 'Youth Engagement Session',
+                //     'image' => '9.jpeg',
+                //     'description' => ''
+                // ],
+                // [
+                //     'id' => 10,
+                //     'category' => 'community-meetings',
+                //     'title' => 'Elderly Community Dialogue',
+                //     'image' => '10.jpeg',
+                //     'description' => ''
+                // ],
+                // [
+                //     'id' => 11,
+                //     'category' => 'community-meetings',
+                //     'title' => 'Women\'s Group Gathering',
+                //     'image' => '11.jpeg',
+                //     'description' => ''
+                // ],
+                // [
+                //     'id' => 12,
+                //     'category' => 'community-meetings',
+                //     'title' => 'Local Business Forum',
+                //     'image' => '12.jpeg',
+                //     'description' => ''
+                // ],
 
-                // Community Meetings
-                [
-                    'id' => 7,
-                    'category' => 'community-meetings',
-                    'title' => 'Town Hall Discussion',
-                    'image' => '7.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 8,
-                    'category' => 'community-meetings',
-                    'title' => 'Village Development Forum',
-                    'image' => '8.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 9,
-                    'category' => 'community-meetings',
-                    'title' => 'Youth Engagement Session',
-                    'image' => '9.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 10,
-                    'category' => 'community-meetings',
-                    'title' => 'Elderly Community Dialogue',
-                    'image' => '10.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 11,
-                    'category' => 'community-meetings',
-                    'title' => 'Women\'s Group Gathering',
-                    'image' => '11.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 12,
-                    'category' => 'community-meetings',
-                    'title' => 'Local Business Forum',
-                    'image' => '12.jpeg',
-                    'description' => ''
-                ],
-
-                // Celebrations
-                [
-                    'id' => 13,
-                    'category' => 'celebrations',
-                    'title' => '5th Anniversary Gala',
-                    'image' => '13.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 14,
-                    'category' => 'celebrations',
-                    'title' => 'Independence Day Celebration',
-                    'image' => '14.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 15,
-                    'category' => 'celebrations',
-                    'title' => 'Cultural Festival',
-                    'image' => '15.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 16,
-                    'category' => 'celebrations',
-                    'title' => 'Achievement Awards Night',
-                    'image' => '16.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 17,
-                    'category' => 'celebrations',
-                    'title' => 'Founders Day Celebration',
-                    'image' => '17.jpeg',
-                    'description' => ''
-                ],
+                // // Celebrations
+                // [
+                //     'id' => 13,
+                //     'category' => 'celebrations',
+                //     'title' => '5th Anniversary Gala',
+                //     'image' => '13.jpeg',
+                //     'description' => ''
+                // ],
+                // [
+                //     'id' => 14,
+                //     'category' => 'celebrations',
+                //     'title' => 'Independence Day Celebration',
+                //     'image' => '14.jpeg',
+                //     'description' => ''
+                // ],
+                // [
+                //     'id' => 15,
+                //     'category' => 'celebrations',
+                //     'title' => 'Cultural Festival',
+                //     'image' => '15.jpeg',
+                //     'description' => ''
+                // ],
+                // [
+                //     'id' => 16,
+                //     'category' => 'celebrations',
+                //     'title' => 'Achievement Awards Night',
+                //     'image' => '16.jpeg',
+                //     'description' => ''
+                // ],
+                // [
+                //     'id' => 17,
+                //     'category' => 'celebrations',
+                //     'title' => 'Founders Day Celebration',
+                //     'image' => '17.jpeg',
+                //     'description' => ''
+                // ],
                 [
                     'id' => 18,
                     'category' => 'celebrations',
@@ -536,7 +534,7 @@ class ApiController extends Controller
                     'id' => 20,
                     'category' => 'campaign-trails',
                     'title' => 'Marketplace Engagement',
-                    'image' => '20.jpeg',
+                    'image' => '35.jpeg',
                     'description' => ''
                 ],
                 [

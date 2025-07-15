@@ -5,9 +5,12 @@ import {
     FaFacebook,
     FaTwitter,
     FaLinkedin,
-    FaInstagram
+    FaInstagram,
+    FaMapMarkerAlt,
+    FaEnvelope,
+    FaPhone
 } from 'react-icons/fa';
-import '../../../css/Contact.css';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import HeroBanner from '@/Components/HeroBanner';
 
 export default function Contact() {
@@ -22,100 +25,120 @@ export default function Contact() {
             }} />
 
             {/* Contact Section */}
-            <div className="contact-container">
-                {/* Contact Form */}
-                <div className="form-card animate">
-                    <h2>Send Us a Message</h2>
-                    <form>
-                        <div className="form-group">
-                            <label htmlFor="name">Your Name</label>
-                            <input
-                                type="text"
-                                id="name"
-                                className="form-control"
-                                placeholder="John Doe"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="email">Email Address</label>
-                            <input
-                                type="email"
-                                id="email"
-                                className="form-control"
-                                placeholder="hello@example.com"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="message">Message</label>
-                            <textarea
-                                id="message"
-                                className="form-control"
-                                placeholder="Your message here..."
-                            ></textarea>
-                        </div>
-                        <button type="submit" className="submit-btn">
-                            Send Message
-                        </button>
-                    </form>
-                </div>
+            <Container className="my-5">
+                <Row className="g-4">
+                    {/* Contact Form */}
+                    <Col md={6}>
+                        <Card className="h-100 border-0 shadow p-4">
+                            <Card.Body>
+                                <Card.Title as="h2" className="mb-4">Send Us a Message</Card.Title>
+                                <Form>
+                                    <Form.Group className="mb-3" controlId="name">
+                                        <Form.Label>Your Name</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="John Doe"
+                                        />
+                                    </Form.Group>
 
-                {/* Contact Info */}
-                <div className="contact-info-card animate delay-100">
-                    <h2>Contact Information</h2>
-                    <div className="contact-method">
-                        <div className="contact-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </div>
-                        <div className="contact-details">
-                            <h3>Our Location</h3>
-                            <p>EPA PARTY<br />EPA HOUSE<br />P.O.BOX 2636-50200,Lusaka Road Bungoma, Kenya</p>
-                        </div>
-                    </div>
+                                    <Form.Group className="mb-3" controlId="email">
+                                        <Form.Label>Email Address</Form.Label>
+                                        <Form.Control
+                                            type="email"
+                                            placeholder="hello@example.com"
+                                        />
+                                    </Form.Group>
 
-                    <div className="contact-method">
-                        <div className="contact-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <div className="contact-details">
-                            <h3>Email Us</h3>
-                            <p>info@epa.or.ke<br />support@epa.or.ke</p>
-                        </div>
-                    </div>
+                                    <Form.Group className="mb-3" controlId="message">
+                                        <Form.Label>Message</Form.Label>
+                                        <Form.Control
+                                            as="textarea"
+                                            rows={4}
+                                            placeholder="Your message here..."
+                                        />
+                                    </Form.Group>
 
-                    <div className="contact-method">
-                        <div className="contact-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                            </svg>
-                        </div>
-                        <div className="contact-details">
-                            <h3>Call Us</h3>
-                            <p>+254733868843<br />Mon-Fri, 9am-5pm EAT</p>
-                        </div>
-                    </div>
+                                    <Button variant="primary" type="submit" className="w-100">
+                                        Send Message
+                                    </Button>
+                                </Form>
+                            </Card.Body>
+                        </Card>
+                    </Col>
 
-                    <div className="social-links">
-                        <h3>Follow Us</h3>
-                        <div className="social-icons">
-                            {[
-                                { name: 'Facebook', icon: <FaFacebook />, link: 'https://www.facebook.com/people/Economic-Patriotic-Alliance/61556977056535/' },
-                                { name: 'Twitter', icon: <FaTwitter />, link: 'https://x.com/epapartyke' },
-                                { name: 'LinkedIn', icon: <FaLinkedin />, link: 'https://www.linkedin.com/in/economic-patriotic-alliance-8205772b7/' },
-                                { name: 'Instagram', icon: <FaInstagram />, link: 'https://www.instagram.com/epapartyke/' }
-                            ].map((social) => (
-                                <a key={social.name} href={social.link} className="social-icon" aria-label={social.name}>
-                                    {social.icon}
-                                </a>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div >
-        </AppLayout >
+                    {/* Contact Info */}
+                    <Col md={6}>
+                        <Card className="h-100 border-0 shadow p-4">
+                            <Card.Body>
+                                <Card.Title as="h2" className="mb-4">Contact Information</Card.Title>
+
+                                <div className="d-flex mb-4">
+                                    <div className="me-3 text-primary">
+                                        <FaMapMarkerAlt size={24} />
+                                    </div>
+                                    <div>
+                                        <h5>Our Location</h5>
+                                        <p className="mb-0">
+                                            EPA PARTY<br />
+                                            EPA HOUSE<br />
+                                            P.O.BOX 2636-50200, Lusaka Road Bungoma, Kenya
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="d-flex mb-4">
+                                    <div className="me-3 text-primary">
+                                        <FaEnvelope size={24} />
+                                    </div>
+                                    <div>
+                                        <h5>Email Us</h5>
+                                        <p className="mb-0">
+                                            info@epa.or.ke<br />
+                                            support@epa.or.ke
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="d-flex mb-4">
+                                    <div className="me-3 text-primary">
+                                        <FaPhone size={24} />
+                                    </div>
+                                    <div>
+                                        <h5>Call Us</h5>
+                                        <p className="mb-0">
+                                            +254733868843<br />
+                                            Mon-Fri, 9am-5pm EAT
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h5 className="mb-3">Follow Us</h5>
+                                    <div className="d-flex gap-3">
+                                        {[
+                                            { name: 'Facebook', icon: <FaFacebook size={24} />, link: 'https://www.facebook.com/people/Economic-Patriotic-Alliance/61556977056535/' },
+                                            { name: 'Twitter', icon: <FaTwitter size={24} />, link: 'https://x.com/epapartyke' },
+                                            { name: 'LinkedIn', icon: <FaLinkedin size={24} />, link: 'https://www.linkedin.com/in/economic-patriotic-alliance-8205772b7/' },
+                                            { name: 'Instagram', icon: <FaInstagram size={24} />, link: 'https://www.instagram.com/epapartyke/' }
+                                        ].map((social) => (
+                                            <a
+                                                key={social.name}
+                                                href={social.link}
+                                                className="text-decoration-none text-dark"
+                                                aria-label={social.name}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                {social.icon}
+                                            </a>
+                                        ))}
+                                    </div>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+        </AppLayout>
     );
 }

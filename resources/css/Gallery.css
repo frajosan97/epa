@@ -1,12 +1,6 @@
 /* ====================== */
 /* PREMIUM GALLERY SECTION */
 /* ====================== */
-.gallery-section {
-    position: relative;
-    padding: 6rem 1rem;
-    overflow: hidden;
-}
-
 /* Header Styling */
 .gallery-header {
     text-align: center;

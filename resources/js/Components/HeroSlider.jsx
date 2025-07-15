@@ -20,8 +20,8 @@ export default function HeroSlider() {
         },
         {
             id: 2,
-            title: "WEALTH IS POWER",
-            description: "Join us in promoting social democracy and equitable governance for all citizens.",
+            title: "County Coordinators",
+            description: "Volunteer leadership opportunities with EPA.",
             media: {
                 type: "image",
                 url: "/storage/images/slides/2.jpeg"
@@ -33,7 +33,7 @@ export default function HeroSlider() {
 
     const settings = {
         slidesToShow: 1,
-        autoplay: false,
+        autoplay: true,
         autoplaySpeed: 6000,
         speed: 800,
         customSettings: {
@@ -41,16 +41,6 @@ export default function HeroSlider() {
             arrows: true,
             dots: true,
             pauseOnHover: true,
-            appendDots: (dots) => (
-                <div className="custom-dots">
-                    <ul>{dots}</ul>
-                </div>
-            ),
-            customPaging: (i) => (
-                <div className="custom-dot">
-                    <div className="dot-inner"></div>
-                </div>
-            ),
             responsive: [
                 {
                     breakpoint: 768,

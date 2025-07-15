@@ -122,7 +122,7 @@
 }
 
 .main-navbar .nav-link.button {
-    background: var(--bg-header-gradient);
+    background: var(--color-secondary);
     color: var(--color-white) !important;
 }
 

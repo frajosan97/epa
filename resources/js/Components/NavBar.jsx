@@ -30,20 +30,15 @@ export default function NavBar() {
             text: 'Donations',
             icon: 'bi-heart-fill',
             dropdownItems: [
-                { href: '/appeal', icon: 'bi-megaphone', text: 'General Appeal' },
-                { href: '/financial', icon: 'bi-cash-stack', text: 'Financial Support' },
-                { href: '/office-space', icon: 'bi-building', text: 'Office Space' },
-                { href: '/specialized', icon: 'bi-tools', text: 'Specialized Skills' },
+                { href: route('donation.appeal'), icon: 'bi-megaphone', text: 'General Appeal' },
+                { href: route('donation.financial'), icon: 'bi-cash-stack', text: 'Financial Support' },
+                { href: route('donation.office'), icon: 'bi-building', text: 'Office Space' },
+                { href: route('donation.specialized'), icon: 'bi-tools', text: 'Specialized Skills' },
             ]
         },
         { href: route('careers'), icon: 'bi-briefcase', text: 'Careers' },
         { href: route('contact'), icon: 'bi-telephone-fill', text: 'Contact', },
-        {
-            href: route('register'),
-            icon: 'bi-person-plus',
-            text: 'Become Member',
-            isButton: true,
-        }
+        { href: route('register'), icon: 'bi-person-plus', text: 'Become Member', isButton: true }
     ];
 
     return (

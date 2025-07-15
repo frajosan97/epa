@@ -440,7 +440,7 @@ export default function MembershipRegistration() {
                 </Form>
 
                 {/* Confirm Membership Modal */}
-                <Modal show={showConfirmModal} onHide={() => {
+                <Modal centered show={showConfirmModal} onHide={() => {
                     setShowConfirmModal(false);
                     setMemberInfo(null);
                     setConfirmValue('');
@@ -539,7 +539,7 @@ export default function MembershipRegistration() {
                 </Modal>
 
                 {/* Unsubscribe Verification Modal */}
-                <Modal show={showUnsubscribeVerification} onHide={() => {
+                <Modal centered show={showUnsubscribeVerification} onHide={() => {
                     setShowUnsubscribeVerification(false);
                     setUnsubscribeOTP('');
                     setUnsubscribeOTPVerified(false);

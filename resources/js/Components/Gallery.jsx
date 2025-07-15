@@ -112,7 +112,7 @@ export default function Gallery() {
     }
 
     return (
-        <section className="gallery-section bg-light">
+        <section className="bg-light">
             <Container className="py-5">
                 <div className="content-header">
                     <h3 className="content-header-title">
