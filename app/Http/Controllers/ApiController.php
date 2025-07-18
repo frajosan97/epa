@@ -428,92 +428,6 @@ class ApiController extends Controller
                     'image' => '5.jpeg',
                     'description' => ''
                 ],
-                // [
-                //     'id' => 6,
-                //     'category' => 'political-rallies',
-                //     'title' => 'Election Campaign Kickoff',
-                //     'image' => '6.jpeg',
-                //     'description' => ''
-                // ],
-                // [
-                //     'id' => 7,
-                //     'category' => 'community-meetings',
-                //     'title' => 'Town Hall Discussion',
-                //     'image' => '7.jpeg',
-                //     'description' => ''
-                // ],
-                // [
-                //     'id' => 8,
-                //     'category' => 'community-meetings',
-                //     'title' => 'Village Development Forum',
-                //     'image' => '8.jpeg',
-                //     'description' => ''
-                // ],
-                // [
-                //     'id' => 9,
-                //     'category' => 'community-meetings',
-                //     'title' => 'Youth Engagement Session',
-                //     'image' => '9.jpeg',
-                //     'description' => ''
-                // ],
-                // [
-                //     'id' => 10,
-                //     'category' => 'community-meetings',
-                //     'title' => 'Elderly Community Dialogue',
-                //     'image' => '10.jpeg',
-                //     'description' => ''
-                // ],
-                // [
-                //     'id' => 11,
-                //     'category' => 'community-meetings',
-                //     'title' => 'Women\'s Group Gathering',
-                //     'image' => '11.jpeg',
-                //     'description' => ''
-                // ],
-                // [
-                //     'id' => 12,
-                //     'category' => 'community-meetings',
-                //     'title' => 'Local Business Forum',
-                //     'image' => '12.jpeg',
-                //     'description' => ''
-                // ],
-
-                // // Celebrations
-                // [
-                //     'id' => 13,
-                //     'category' => 'celebrations',
-                //     'title' => '5th Anniversary Gala',
-                //     'image' => '13.jpeg',
-                //     'description' => ''
-                // ],
-                // [
-                //     'id' => 14,
-                //     'category' => 'celebrations',
-                //     'title' => 'Independence Day Celebration',
-                //     'image' => '14.jpeg',
-                //     'description' => ''
-                // ],
-                // [
-                //     'id' => 15,
-                //     'category' => 'celebrations',
-                //     'title' => 'Cultural Festival',
-                //     'image' => '15.jpeg',
-                //     'description' => ''
-                // ],
-                // [
-                //     'id' => 16,
-                //     'category' => 'celebrations',
-                //     'title' => 'Achievement Awards Night',
-                //     'image' => '16.jpeg',
-                //     'description' => ''
-                // ],
-                // [
-                //     'id' => 17,
-                //     'category' => 'celebrations',
-                //     'title' => 'Founders Day Celebration',
-                //     'image' => '17.jpeg',
-                //     'description' => ''
-                // ],
                 [
                     'id' => 18,
                     'category' => 'celebrations',
@@ -521,8 +435,6 @@ class ApiController extends Controller
                     'image' => '18.jpeg',
                     'description' => ''
                 ],
-
-                // Campaign Trails
                 [
                     'id' => 19,
                     'category' => 'campaign-trails',
@@ -701,6 +613,13 @@ class ApiController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'No member found with those details'
+                ], 404);
+            }
+
+            if ($user->status === 'unsubscribed') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You no longer a member of EPA because you unsubscribed for help contact us'
                 ], 404);
             }
 

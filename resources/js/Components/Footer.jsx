@@ -14,16 +14,16 @@ const Footer = () => {
                         and meaningful events that bring people together.
                     </p>
                     <div className="footer-social-links">
-                        <a href="#" className="footer-social-link facebook">
+                        <a href="https://www.facebook.com/people/Economic-Patriotic-Alliance/61556977056535/" className="footer-social-link facebook">
                             <i className="bi bi-facebook"></i>
                         </a>
-                        <a href="#" className="footer-social-link twitter">
+                        <a href="https://x.com/epapartyke" className="footer-social-link twitter-x">
                             <i className="bi bi-twitter-x"></i>
                         </a>
-                        <a href="#" className="footer-social-link linkedin">
+                        <a href="https://www.linkedin.com/in/economic-patriotic-alliance-8205772b7/" className="footer-social-link linkedin">
                             <i className="bi bi-linkedin"></i>
                         </a>
-                        <a href="#" className="footer-social-link instagram">
+                        <a href="https://www.instagram.com/epapartyke/" className="footer-social-link instagram">
                             <i className="bi bi-instagram"></i>
                         </a>
                     </div>

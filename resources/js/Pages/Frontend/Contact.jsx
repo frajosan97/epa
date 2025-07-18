@@ -12,6 +12,7 @@ import {
 } from 'react-icons/fa';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import HeroBanner from '@/Components/HeroBanner';
+import { BsTwitterX } from 'react-icons/bs';
 
 export default function Contact() {
     return (
@@ -117,7 +118,7 @@ export default function Contact() {
                                     <div className="d-flex gap-3">
                                         {[
                                             { name: 'Facebook', icon: <FaFacebook size={24} />, link: 'https://www.facebook.com/people/Economic-Patriotic-Alliance/61556977056535/' },
-                                            { name: 'Twitter', icon: <FaTwitter size={24} />, link: 'https://x.com/epapartyke' },
+                                            { name: 'Twitter', icon: <BsTwitterX size={24} />, link: 'https://x.com/epapartyke' },
                                             { name: 'LinkedIn', icon: <FaLinkedin size={24} />, link: 'https://www.linkedin.com/in/economic-patriotic-alliance-8205772b7/' },
                                             { name: 'Instagram', icon: <FaInstagram size={24} />, link: 'https://www.instagram.com/epapartyke/' }
                                         ].map((social) => (
