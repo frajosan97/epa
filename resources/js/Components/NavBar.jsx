@@ -1,24 +1,19 @@
 import { Link } from '@inertiajs/react';
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import {
     Navbar,
     Nav,
     NavDropdown,
     Container,
     Offcanvas,
-    Form,
-    InputGroup,
-    Button,
 } from 'react-bootstrap';
 import ApplicationLogo from './ApplicationLogo';
+import Search from './Search';
 import '../../css/NavBar.css';
 
 export default function NavBar() {
     const [dropdownOpen, setDropdownOpen] = useState(null);
     const [searchOpen, setSearchOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-    const searchRef = useRef(null);
-    const inputRef = useRef(null);
 
     const navItems = [
         { href: route('/'), icon: 'bi-house-door', text: 'Home' },
@@ -48,71 +43,12 @@ export default function NavBar() {
         { href: route('register'), icon: 'bi-person-plus', text: 'Become Member', isButton: true }
     ];
 
-    const handleSearchSubmit = (e) => {
-        e.preventDefault();
-        // Handle search submission here
-        console.log('Searching for:', searchQuery);
-        // You can redirect to search page or perform search here
-    };
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (searchRef.current && !searchRef.current.contains(event.target)) {
-                setSearchOpen(false);
-            }
-        };
-
-        if (searchOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.body.classList.add('search-active');
-            if (inputRef.current) {
-                inputRef.current.focus();
-            }
-        } else {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.body.classList.remove('search-active');
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.body.classList.remove('search-active');
-        };
-    }, [searchOpen]);
-
     return (
         <>
-            {/* Full-page search overlay */}
-            {searchOpen && (
-                <div className="search-overlay">
-                    <Form onSubmit={handleSearchSubmit} className="search-form">
-                        <InputGroup>
-                            <Form.Control
-                                ref={inputRef}
-                                type="text"
-                                placeholder="Search..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                autoFocus
-                                className="search-input"
-                            />
-                            <Button
-                                variant="outline-secondary"
-                                type="submit"
-                                className="search-submit"
-                            >
-                                <i className="bi bi-search"></i>
-                            </Button>
-                            <Button
-                                variant="outline-secondary"
-                                onClick={() => setSearchOpen(false)}
-                                className="search-close"
-                            >
-                                <i className="bi bi-x-lg"></i>
-                            </Button>
-                        </InputGroup>
-                    </Form>
-                </div>
-            )}
+            <Search
+                isOpen={searchOpen}
+                onClose={() => setSearchOpen(false)}
+            />
 
             <Navbar expand="lg" className={`main-navbar p-0 ${searchOpen ? 'search-open' : ''}`} bg="light">
                 <Container className="navbar-container p-0">
@@ -178,14 +114,12 @@ export default function NavBar() {
                                 })}
 
                                 {/* Search Icon */}
-                                <div ref={searchRef}>
-                                    <Nav.Link
-                                        onClick={() => setSearchOpen(true)}
-                                        className="nav-link search-icon"
-                                    >
-                                        <i className="bi bi-search"></i>
-                                    </Nav.Link>
-                                </div>
+                                <Nav.Link
+                                    onClick={() => setSearchOpen(true)}
+                                    className="nav-link search-icon"
+                                >
+                                    <i className="bi bi-search"></i>
+                                </Nav.Link>
                             </Nav>
                         </Offcanvas.Body>
                     </Navbar.Offcanvas>

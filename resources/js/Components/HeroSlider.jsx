@@ -9,7 +9,7 @@ export default function HeroSlider() {
     const slides = [
         {
             id: 1,
-            title: "WEALTH IS POWER",
+            title: "ECONOMIC PATRIOTIC ALLIANCE",
             description: "Join us in promoting social democracy and equitable governance for all citizens.",
             media: {
                 type: "image",
@@ -20,7 +20,7 @@ export default function HeroSlider() {
         },
         {
             id: 2,
-            title: "County Coordinators",
+            title: "ECONOMIC PATRIOTIC ALLIANCE",
             description: "Volunteer leadership opportunities with EPA.",
             media: {
                 type: "image",
