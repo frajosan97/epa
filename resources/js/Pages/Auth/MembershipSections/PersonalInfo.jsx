@@ -43,7 +43,7 @@ export default function PersonalInformation({
 
     // Handle ID/Passport number change with max length validation
     const handleIdNumberChange = (value) => {
-        if (value.length <= 8) {
+        if (value.length <= 9) {
             setData('idNumber', value);
         }
     };
@@ -72,18 +72,18 @@ export default function PersonalInformation({
             <div className="p-3">
                 <Row>
                     <Col md={12}>
-                        <FloatingLabel controlId="idNumber" label="ID/Passport Number (max 8 chars)" className="mb-3">
+                        <FloatingLabel controlId="idNumber" label="ID/Passport Number (max 9 chars)" className="mb-3">
                             <Form.Control
                                 type="text"
                                 placeholder="ID/Passport Number"
                                 value={data.idNumber}
                                 onChange={(e) => handleIdNumberChange(e.target.value)}
                                 isInvalid={!!errors.idNumber}
-                                maxLength={8}
+                                maxLength={9}
                                 required
                             />
                             <Form.Control.Feedback type="invalid">
-                                {errors.idNumber || "ID/Passport number must be 8 characters or less"}
+                                {errors.idNumber || "ID/Passport number must be 9 characters or less"}
                             </Form.Control.Feedback>
                         </FloatingLabel>
                     </Col>

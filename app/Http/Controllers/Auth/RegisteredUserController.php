@@ -30,7 +30,7 @@ class RegisteredUserController extends Controller
     {
         // Validate the incoming request data
         $validated = $request->validate([
-            'idNumber' => 'required|string|max:20|unique:users,id_number',
+            'idNumber' => 'required|string|max:9|unique:users,id_number',
             'sirName' => 'required|string|max:255',
             'firstName' => 'required|string|max:255',
             'lastName' => 'required|string|max:255',
