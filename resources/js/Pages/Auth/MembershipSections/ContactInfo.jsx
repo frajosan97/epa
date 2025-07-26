@@ -80,7 +80,7 @@ export default function ContactInformation({
                         <InputGroup className="mb-3">
                             <FloatingLabel controlId="phone" label="Phone Number" style={{ flex: 1 }}>
                                 <Form.Control
-                                    type="text"
+                                    type="number"
                                     placeholder="e.g., 2547XXXXXXXX"
                                     value={data.phone}
                                     onChange={(e) => setData('phone', e.target.value)}

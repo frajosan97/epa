@@ -74,7 +74,7 @@ export default function PersonalInformation({
                     <Col md={12}>
                         <FloatingLabel controlId="idNumber" label="ID/Passport Number (max 9 chars)" className="mb-3">
                             <Form.Control
-                                type="text"
+                                type="number"
                                 placeholder="ID/Passport Number"
                                 value={data.idNumber}
                                 onChange={(e) => handleIdNumberChange(e.target.value)}
