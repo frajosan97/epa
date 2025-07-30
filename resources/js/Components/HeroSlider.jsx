@@ -13,7 +13,7 @@ export default function HeroSlider() {
             description: "Join us in promoting social democracy and equitable governance for all citizens.",
             media: {
                 type: "image",
-                url: "/storage/images/slides/1.jpeg"
+                url: "/storage/images/gallery/6.jpg"
             },
             cta: "Register for Membership Today",
             cta_link: route('register'),
@@ -24,7 +24,7 @@ export default function HeroSlider() {
             description: "Volunteer leadership opportunities with EPA.",
             media: {
                 type: "image",
-                url: "/storage/images/slides/2.jpeg"
+                url: "/storage/images/gallery/25.jpeg"
             },
             cta: "Check for Membership Status",
             cta_link: route('register'),

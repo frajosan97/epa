@@ -296,7 +296,7 @@ class ApiController extends Controller
                     'date' => 'July 10, 2025',
                     'time' => '10:00 AM',
                     'location' => 'Uhuru Park, Nairobi',
-                    'image' => '3.jpeg',
+                    'image' => '3.jpg',
                 ],
                 [
                     'id' => 2,
@@ -305,7 +305,7 @@ class ApiController extends Controller
                     'date' => 'July 22, 2025',
                     'time' => '8:00 AM',
                     'location' => 'Kakamega Golf Hotel Grounds',
-                    'image' => '5.jpeg',
+                    'image' => '5.jpg',
                 ],
                 [
                     'id' => 3,
@@ -314,7 +314,7 @@ class ApiController extends Controller
                     'date' => 'August 5, 2025',
                     'time' => '9:00 AM',
                     'location' => 'Mombasa Showground',
-                    'image' => '1.jpeg',
+                    'image' => '1.jpg',
                 ],
             ];
 
@@ -356,7 +356,7 @@ class ApiController extends Controller
                     'date' => 'July 10, 2025',
                     'time' => '10:00 AM',
                     'location' => 'Uhuru Park, Nairobi',
-                    'image' => '17.jpeg',
+                    'image' => '17.jpg',
                     'description' => 'Join us for an inspiring rally focused on engaging and empowering the youth in our national development agenda.'
                 ],
                 [
@@ -397,35 +397,35 @@ class ApiController extends Controller
                     'id' => 1,
                     'category' => 'political-rallies',
                     'title' => 'National Convention 2023',
-                    'image' => '1.jpeg',
+                    'image' => '1.jpg',
                     'description' => ''
                 ],
                 [
                     'id' => 2,
                     'category' => 'political-rallies',
                     'title' => 'Youth Empowerment Rally',
-                    'image' => '2.jpeg',
+                    'image' => '2.jpg',
                     'description' => ''
                 ],
                 [
                     'id' => 3,
                     'category' => 'political-rallies',
                     'title' => 'Women Leadership Rally',
-                    'image' => '3.jpeg',
+                    'image' => '3.jpg',
                     'description' => ''
                 ],
                 [
                     'id' => 4,
                     'category' => 'political-rallies',
                     'title' => 'Regional Political Gathering',
-                    'image' => '4.jpeg',
+                    'image' => '4.jpg',
                     'description' => ''
                 ],
                 [
                     'id' => 5,
                     'category' => 'political-rallies',
                     'title' => 'Policy Announcement Rally',
-                    'image' => '5.jpeg',
+                    'image' => '5.jpg',
                     'description' => ''
                 ],
                 [
