@@ -356,7 +356,7 @@ class ApiController extends Controller
                     'date' => 'July 10, 2025',
                     'time' => '10:00 AM',
                     'location' => 'Uhuru Park, Nairobi',
-                    'image' => '17.jpg',
+                    'image' => '13.jpg',
                     'description' => 'Join us for an inspiring rally focused on engaging and empowering the youth in our national development agenda.'
                 ],
                 [
