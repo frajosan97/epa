@@ -25,17 +25,20 @@ Route::get('/contact', function () {
     return Inertia::render('Frontend/Contact');
 })->name('contact');
 
-Route::prefix('resource')->group(function () {
-    Route::get('/downloads', [ResourceController::class, 'downloads'])->name('resource.downloads');
-    Route::get('/privacy', [ResourceController::class, 'privacy'])->name('resource.privacy');
-    Route::get('/faq', [ResourceController::class, 'faq'])->name('resource.faq');
+Route::prefix('resource')->name('resource.')->group(function () {
+    Route::get('/publications', [ResourceController::class, 'publications'])->name('publications');
+    Route::get('/publications/{publication}', [ResourceController::class, 'showPublication'])->name('publication.show');
+    Route::get('/publications/{publication}/pdf', [ResourceController::class, 'downloadPublicationPdf'])->name('publication.pdf');
+    Route::get('/downloads', [ResourceController::class, 'downloads'])->name('downloads');
+    Route::get('/privacy', [ResourceController::class, 'privacy'])->name('privacy');
+    Route::get('/faq', [ResourceController::class, 'faq'])->name('faq');
 });
 
-Route::prefix('donation')->group(function () {
-    Route::get('/appeal', [DonationController::class, 'appeal'])->name('donation.appeal');
-    Route::get('/financial', [DonationController::class, 'financial'])->name('donation.financial');
-    Route::get('/office', [DonationController::class, 'office'])->name('donation.office');
-    Route::get('/specialized', [DonationController::class, 'specialized'])->name('donation.specialized');
+Route::prefix('donation')->name('donation.')->group(function () {
+    Route::get('/appeal', [DonationController::class, 'appeal'])->name('appeal');
+    Route::get('/financial', [DonationController::class, 'financial'])->name('financial');
+    Route::get('/office', [DonationController::class, 'office'])->name('office');
+    Route::get('/specialized', [DonationController::class, 'specialized'])->name('specialized');
 });
 
 require __DIR__ . '/auth.php';

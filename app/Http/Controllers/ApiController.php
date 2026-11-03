@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Mail\OtpMail;
-use App\Models\County;
+use App\Models\Blog;
 use App\Models\Constituency;
+use App\Models\Country;
+use App\Models\County;
+use App\Models\Event;
+use App\Models\Gallery;
 use App\Models\User;
 use App\Models\Ward;
 use App\Services\SmsService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -17,490 +22,228 @@ use Illuminate\Support\Facades\Validator;
 class ApiController extends Controller
 {
     /**
-     * SMS Service instance for sending notifications
-     * 
+     * SMS service used to dispatch OTP and notification messages.
+     *
      * @var SmsService
      */
-    protected $smsService;
+    protected SmsService $smsService;
 
     /**
-     * Constructor for dependency injection
+     * Inject required services.
      *
-     * @param SmsService $smsService
+     * @param  SmsService  $smsService
      */
     public function __construct(SmsService $smsService)
     {
         $this->smsService = $smsService;
     }
 
-    public function countries()
+    /* =====================================================================
+     |  REFERENCE / LOOKUP ENDPOINTS
+     |===================================================================== */
+
+    /**
+     * List all active countries, alphabetically ordered.
+     *
+     * Used by onboarding / registration forms to populate a country picker.
+     *
+     * @return JsonResponse
+     */
+    public function countries(): JsonResponse
     {
         try {
-            $countries = [
-                "Afghanistan",
-                "Albania",
-                "Algeria",
-                "Andorra",
-                "Angola",
-                "Antigua and Barbuda",
-                "Argentina",
-                "Armenia",
-                "Australia",
-                "Austria",
-                "Azerbaijan",
-                "Bahamas",
-                "Bahrain",
-                "Bangladesh",
-                "Barbados",
-                "Belarus",
-                "Belgium",
-                "Belize",
-                "Benin",
-                "Bhutan",
-                "Bolivia",
-                "Bosnia and Herzegovina",
-                "Botswana",
-                "Brazil",
-                "Brunei",
-                "Bulgaria",
-                "Burkina Faso",
-                "Burundi",
-                "Cabo Verde",
-                "Cambodia",
-                "Cameroon",
-                "Canada",
-                "Central African Republic",
-                "Chad",
-                "Chile",
-                "China",
-                "Colombia",
-                "Comoros",
-                "Congo (Brazzaville)",
-                "Congo (Kinshasa)",
-                "Costa Rica",
-                "Croatia",
-                "Cuba",
-                "Cyprus",
-                "Czech Republic",
-                "Denmark",
-                "Djibouti",
-                "Dominica",
-                "Dominican Republic",
-                "Ecuador",
-                "Egypt",
-                "El Salvador",
-                "Equatorial Guinea",
-                "Eritrea",
-                "Estonia",
-                "Eswatini",
-                "Ethiopia",
-                "Fiji",
-                "Finland",
-                "France",
-                "Gabon",
-                "Gambia",
-                "Georgia",
-                "Germany",
-                "Ghana",
-                "Greece",
-                "Grenada",
-                "Guatemala",
-                "Guinea",
-                "Guinea-Bissau",
-                "Guyana",
-                "Haiti",
-                "Honduras",
-                "Hungary",
-                "Iceland",
-                "India",
-                "Indonesia",
-                "Iran",
-                "Iraq",
-                "Ireland",
-                "Israel",
-                "Italy",
-                "Jamaica",
-                "Japan",
-                "Jordan",
-                "Kazakhstan",
-                "Kenya",
-                "Kiribati",
-                "Kuwait",
-                "Kyrgyzstan",
-                "Laos",
-                "Latvia",
-                "Lebanon",
-                "Lesotho",
-                "Liberia",
-                "Libya",
-                "Liechtenstein",
-                "Lithuania",
-                "Luxembourg",
-                "Madagascar",
-                "Malawi",
-                "Malaysia",
-                "Maldives",
-                "Mali",
-                "Malta",
-                "Marshall Islands",
-                "Mauritania",
-                "Mauritius",
-                "Mexico",
-                "Micronesia",
-                "Moldova",
-                "Monaco",
-                "Mongolia",
-                "Montenegro",
-                "Morocco",
-                "Mozambique",
-                "Myanmar (Burma)",
-                "Namibia",
-                "Nauru",
-                "Nepal",
-                "Netherlands",
-                "New Zealand",
-                "Nicaragua",
-                "Niger",
-                "Nigeria",
-                "North Korea",
-                "North Macedonia",
-                "Norway",
-                "Oman",
-                "Pakistan",
-                "Palau",
-                "Palestine",
-                "Panama",
-                "Papua New Guinea",
-                "Paraguay",
-                "Peru",
-                "Philippines",
-                "Poland",
-                "Portugal",
-                "Qatar",
-                "Romania",
-                "Russia",
-                "Rwanda",
-                "Saint Kitts and Nevis",
-                "Saint Lucia",
-                "Saint Vincent and the Grenadines",
-                "Samoa",
-                "San Marino",
-                "Sao Tome and Principe",
-                "Saudi Arabia",
-                "Senegal",
-                "Serbia",
-                "Seychelles",
-                "Sierra Leone",
-                "Singapore",
-                "Slovakia",
-                "Slovenia",
-                "Solomon Islands",
-                "Somalia",
-                "South Africa",
-                "South Korea",
-                "South Sudan",
-                "Spain",
-                "Sri Lanka",
-                "Sudan",
-                "Suriname",
-                "Sweden",
-                "Switzerland",
-                "Syria",
-                "Taiwan",
-                "Tajikistan",
-                "Tanzania",
-                "Thailand",
-                "Timor-Leste",
-                "Togo",
-                "Tonga",
-                "Trinidad and Tobago",
-                "Tunisia",
-                "Turkey",
-                "Turkmenistan",
-                "Tuvalu",
-                "Uganda",
-                "Ukraine",
-                "United Arab Emirates",
-                "United Kingdom",
-                "United States",
-                "Uruguay",
-                "Uzbekistan",
-                "Vanuatu",
-                "Vatican City",
-                "Venezuela",
-                "Vietnam",
-                "Yemen",
-                "Zambia",
-                "Zimbabwe",
-            ];
+            $countries = Country::where('is_active', true)
+                ->orderBy('name')
+                ->get();
 
             return response()->json($countries);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Countries failed: ' . $e->getMessage());
-            return response()->json('Countries failed: ' . $e->getMessage());
+
+            return response()->json(['error' => 'Countries failed'], 500);
         }
     }
 
-    public function counties()
+    /**
+     * List all counties.
+     *
+     * @return JsonResponse
+     */
+    public function counties(): JsonResponse
     {
         try {
             $counties = County::all();
 
             return response()->json($counties);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Counties failed: ' . $e->getMessage());
-            return response()->json('Counties failed: ' . $e->getMessage());
+
+            return response()->json(['error' => 'Counties failed'], 500);
         }
     }
 
-    public function constituencies(Request $request)
+    /**
+     * List constituencies belonging to a given county.
+     *
+     * @param  Request  $request  Requires: county (county id)
+     * @return JsonResponse
+     */
+    public function constituencies(Request $request): JsonResponse
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'county' => 'required|string|exists:counties,id',
-            ]);
+        $validator = Validator::make($request->all(), [
+            'county' => 'required|string|exists:counties,id',
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid input',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
             $constituencies = Constituency::where('county_id', $request->county)->get();
 
             return response()->json($constituencies);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Constituencies failed: ' . $e->getMessage());
-            return response()->json('Constituencies failed: ' . $e->getMessage());
+
+            return response()->json(['error' => 'Constituencies failed'], 500);
         }
     }
 
-    public function wards(Request $request)
+    /**
+     * List wards belonging to a given constituency.
+     *
+     * @param  Request  $request  Requires: constituency (constituency id)
+     * @return JsonResponse
+     */
+    public function wards(Request $request): JsonResponse
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'constituency' => 'required|string|exists:constituencies,id',
-            ]);
+        $validator = Validator::make($request->all(), [
+            'constituency' => 'required|string|exists:constituencies,id',
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid input',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
             $wards = Ward::where('constituency_id', $request->constituency)->get();
 
             return response()->json($wards);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Wards failed: ' . $e->getMessage());
-            return response()->json('Wards failed: ' . $e->getMessage());
+
+            return response()->json(['error' => 'Wards failed'], 500);
         }
     }
 
-    public function events()
+    /* =====================================================================
+     |  CONTENT ENDPOINTS
+     |===================================================================== */
+
+    /**
+     * List published events ordered by event date (ascending).
+     *
+     * @return JsonResponse
+     */
+    public function events(): JsonResponse
     {
         try {
-            $events = [
-                [
-                    'id' => 1,
-                    'title' => 'National Youth Mobilization Rally',
-                    'subtitle' => 'Empowering the Next Generation',
-                    'date' => 'July 10, 2025',
-                    'time' => '10:00 AM',
-                    'location' => 'Uhuru Park, Nairobi',
-                    'image' => '3.jpg',
-                ],
-                [
-                    'id' => 2,
-                    'title' => 'Western Region Economic Forum',
-                    'subtitle' => 'Driving Regional Development',
-                    'date' => 'July 22, 2025',
-                    'time' => '8:00 AM',
-                    'location' => 'Kakamega Golf Hotel Grounds',
-                    'image' => '5.jpg',
-                ],
-                [
-                    'id' => 3,
-                    'title' => 'Women Leadership Summit',
-                    'subtitle' => 'Breaking Barriers, Building Futures',
-                    'date' => 'August 5, 2025',
-                    'time' => '9:00 AM',
-                    'location' => 'Mombasa Showground',
-                    'image' => '1.jpg',
-                ],
-            ];
+            $events = Event::where('is_published', true)
+                ->orderBy('event_date')
+                ->get();
 
             return response()->json($events);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Events failed: ' . $e->getMessage());
-            return response()->json('Events failed: ' . $e->getMessage());
+
+            return response()->json(['error' => 'Events failed'], 500);
         }
     }
 
-    public function news()
+    /**
+     * List published blog posts, newest first.
+     *
+     * Only returns posts that are:
+     *  - marked as published (`is_published = true`), and
+     *  - have a `published_at` timestamp that is not in the future.
+     *
+     * Ordered by `published_at` descending so the newest post appears first.
+     *
+     * @return JsonResponse
+     */
+    public function news(): JsonResponse
     {
         try {
-            $news = [
-                [
-                    'id' => 1,
-                    'title' => 'Membership Recruitment Plan and Website Demonstration at ORPP',
-                    'subtitle' => 'EPA demonstrates compliance with political party regulations',
-                    'date' => 'July 1, 2025',
-                    'time' => '10:00 AM',
-                    'location' => '1st Floor Boardroom, ORPP',
-                    'image' => '21.jpeg',
-                    'description' => 'The Economic Patriotic Alliance (EPA) successfully participated in the membership recruitment system demonstration organized by the Office of the Registrar of Political Parties (ORPP). The team demonstrated full compliance with political party regulations, showcasing digital membership registration, member details management, and secure authentication processes.'
-                ],
-                [
-                    'id' => 2,
-                    'title' => 'Party Manifesto and Ideology Presentation',
-                    'subtitle' => 'Official unveiling of EPA\'s vision and goals',
-                    'date' => 'May 28, 2025',
-                    'time' => 'Time not specified',
-                    'location' => 'Party Registrar\'s Office',
-                    'image' => '24.jpeg',
-                    'description' => 'The party\'s manifesto and ideology were officially presented at the party registrar\'s office with many key party officials in attendance. This significant event marked a pivotal moment for the party as they outlined their vision and goals for the future.'
-                ],
-                [
-                    'id' => 3,
-                    'title' => 'National Youth Mobilization Rally',
-                    'subtitle' => 'Empowering the Next Generation',
-                    'date' => 'July 10, 2025',
-                    'time' => '10:00 AM',
-                    'location' => 'Uhuru Park, Nairobi',
-                    'image' => '13.jpg',
-                    'description' => 'Join us for an inspiring rally focused on engaging and empowering the youth in our national development agenda.'
-                ],
-                [
-                    'id' => 4,
-                    'title' => 'Western Region Economic Forum',
-                    'subtitle' => 'Driving Regional Development',
-                    'date' => 'July 22, 2025',
-                    'time' => '8:00 AM',
-                    'location' => 'Kakamega Golf Hotel Grounds',
-                    'image' => '25.jpeg',
-                    'description' => 'A forum to discuss economic development strategies and opportunities in the Western region.'
-                ],
-                [
-                    'id' => 5,
-                    'title' => 'Women Leadership Summit',
-                    'subtitle' => 'Breaking Barriers, Building Futures',
-                    'date' => 'August 5, 2025',
-                    'time' => '9:00 AM',
-                    'location' => 'Mombasa Showground',
-                    'image' => '18.jpeg',
-                    'description' => 'A summit dedicated to promoting women leadership and addressing gender equality in leadership roles.'
-                ]
-            ];
+            $news = Blog::published()
+                ->latest('published_at')
+                ->get();
 
             return response()->json($news);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('News failed: ' . $e->getMessage());
-            return response()->json('News failed: ' . $e->getMessage());
+
+            return response()->json(['error' => 'News failed'], 500);
         }
     }
 
-    public function gallerly()
+    /**
+     * List published gallery images.
+     *
+     * Route name kept as "gallerly" for backward compatibility with the
+     * existing mobile clients. Consider adding a correctly-spelled alias.
+     *
+     * @return JsonResponse
+     */
+    public function gallerly(): JsonResponse
     {
         try {
-            $gallerly = [
-                // Political Rallies
-                [
-                    'id' => 1,
-                    'category' => 'political-rallies',
-                    'title' => 'National Convention 2023',
-                    'image' => '1.jpg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 2,
-                    'category' => 'political-rallies',
-                    'title' => 'Youth Empowerment Rally',
-                    'image' => '2.jpg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 3,
-                    'category' => 'political-rallies',
-                    'title' => 'Women Leadership Rally',
-                    'image' => '3.jpg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 4,
-                    'category' => 'political-rallies',
-                    'title' => 'Regional Political Gathering',
-                    'image' => '4.jpg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 5,
-                    'category' => 'political-rallies',
-                    'title' => 'Policy Announcement Rally',
-                    'image' => '5.jpg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 18,
-                    'category' => 'celebrations',
-                    'title' => 'Community Harvest Festival',
-                    'image' => '18.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 19,
-                    'category' => 'campaign-trails',
-                    'title' => 'Door-to-Door Canvassing',
-                    'image' => '19.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 20,
-                    'category' => 'campaign-trails',
-                    'title' => 'Marketplace Engagement',
-                    'image' => '35.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 21,
-                    'category' => 'campaign-trails',
-                    'title' => 'Rural Village Tour',
-                    'image' => '21.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 22,
-                    'category' => 'campaign-trails',
-                    'title' => 'Urban Neighborhood Walk',
-                    'image' => '22.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 23,
-                    'category' => 'campaign-trails',
-                    'title' => 'Youth Voter Registration Drive',
-                    'image' => '23.jpeg',
-                    'description' => ''
-                ],
-                [
-                    'id' => 24,
-                    'category' => 'campaign-trails',
-                    'title' => 'Policy Roadshow',
-                    'image' => '24.jpeg',
-                    'description' => ''
-                ]
-            ];
+            $gallery = Gallery::where('is_published', true)->get();
 
-            return response()->json($gallerly);
-        } catch (\Exception $e) {
+            return response()->json($gallery);
+        } catch (\Throwable $e) {
             Log::error('Gallery failed: ' . $e->getMessage());
-            return response()->json(['error' => 'Gallery failed: ' . $e->getMessage()], 500);
+
+            return response()->json(['error' => 'Gallery failed'], 500);
         }
     }
 
-    public function send(Request $request)
+    /* =====================================================================
+     |  OTP (ONE-TIME PASSWORD) ENDPOINTS
+     |===================================================================== */
+
+    /**
+     * Generate and dispatch an OTP via SMS or email.
+     *
+     * The OTP is cached for 5 minutes keyed by the normalized identifier
+     * (phone number or email).
+     *
+     * @param  Request  $request
+     * @return JsonResponse
+     */
+    public function send(Request $request): JsonResponse
     {
         try {
             $validated = $request->validate([
-                'type'  => ['required', 'string', 'in:phone,email', 'max:255'],
+                'type' => ['required', 'string', 'in:phone,email'],
                 'email' => ['required_if:type,email', 'email', 'max:255'],
                 'phone' => ['required_if:type,phone', 'string', 'max:20'],
             ]);
 
             $otp = generateOtp();
+
             $identifier = $validated['type'] === 'phone'
                 ? formatPhoneNumber($validated['phone'])
                 : $validated['email'];
 
-            // Store OTP in cache for 5 minutes (300 seconds)
+            // Store OTP for 5 minutes.
             Cache::put('otp_' . $identifier, $otp, now()->addMinutes(5));
 
             $message = 'Your EPA verification OTP is ' . $otp;
@@ -508,93 +251,112 @@ class ApiController extends Controller
             if ($validated['type'] === 'phone') {
                 $this->smsService->sendSms($identifier, $message);
             } else {
-                // Implement email sending logic here
                 Mail::to($identifier)->send(new OtpMail($otp));
             }
 
             return response()->json([
                 'success' => true,
                 'message' => 'OTP sent successfully',
-                'expires_in' => 300 // seconds
+                'expires_in' => 300, // seconds
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('OTP send failed: ' . $e->getMessage(), [
                 'exception' => $e,
-                'request' => $request->all()
+                'request' => $request->all(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to send OTP',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
-    public function verify(Request $request)
+    /**
+     * Verify an OTP for a given identifier (phone or email).
+     *
+     * On success the OTP is removed from the cache so it cannot be reused.
+     *
+     * @param  Request  $request
+     * @return JsonResponse
+     */
+    public function verify(Request $request): JsonResponse
     {
         try {
             $validated = $request->validate([
-                'type'  => ['required', 'string', 'in:phone,email', 'max:255'],
+                'type' => ['required', 'string', 'in:phone,email'],
                 'email' => ['required_if:type,email', 'email', 'max:255'],
                 'phone' => ['required_if:type,phone', 'string', 'max:20'],
-                'otp'   => ['required', 'string', 'digits:6'],
+                'otp' => ['required', 'string', 'digits:6'],
             ]);
 
             $identifier = $validated['type'] === 'phone'
                 ? formatPhoneNumber($validated['phone'])
                 : $validated['email'];
 
-            $cachedOtp = Cache::get('otp_' . $identifier);
+            $cacheKey = 'otp_' . $identifier;
+            $cachedOtp = Cache::get($cacheKey);
 
             if (!$cachedOtp) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'OTP expired or not found'
+                    'message' => 'OTP expired or not found',
                 ], 400);
             }
 
-            if ($cachedOtp != $validated['otp']) {
+            if ((string) $cachedOtp !== (string) $validated['otp']) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid OTP'
+                    'message' => 'Invalid OTP',
                 ], 400);
             }
 
-            // OTP is valid, clear it from cache
-            Cache::forget('otp_' . $identifier);
+            Cache::forget($cacheKey);
 
             return response()->json([
                 'success' => true,
-                'message' => 'OTP verified successfully'
+                'message' => 'OTP verified successfully',
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('OTP verification failed: ' . $e->getMessage(), [
                 'exception' => $e,
-                'request' => $request->all()
+                'request' => $request->all(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'OTP verification failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
-    public function confirm(Request $request)
+    /* =====================================================================
+     |  MEMBER ENDPOINTS
+     |===================================================================== */
+
+    /**
+     * Look up a member by national ID or phone number.
+     *
+     * Returns limited member information used for confirmation screens.
+     * Unsubscribed members are rejected with a 404.
+     *
+     * @param  Request  $request
+     * @return JsonResponse
+     */
+    public function confirm(Request $request): JsonResponse
     {
-        // Validate the request
         $validator = Validator::make($request->all(), [
             'type' => 'required|in:id,phone',
-            'value' => 'required|string'
+            'value' => 'required|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid input',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -602,67 +364,82 @@ class ApiController extends Controller
             $type = $request->input('type');
             $value = $request->input('value');
 
-            // Search for user based on type
-            if ($type === 'id') {
-                $user = User::where('id_number', $value)->first();
-            } else {
-                $user = User::where('phone', $value)->first();
-            }
+            $user = $type === 'id'
+                ? User::where('id_number', $value)->first()
+                : User::where('phone', $value)->first();
 
             if (!$user) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No member found with those details'
+                    'message' => 'No member found with those details',
                 ], 404);
             }
 
             if ($user->status === 'unsubscribed') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'You no longer a member of EPA because you unsubscribed for help contact us'
+                    'message' => 'You are no longer a member of EPA. If you unsubscribed by mistake, please contact us.',
                 ], 404);
             }
 
-            // Return member information (only necessary fields)
             return response()->json([
                 'success' => true,
                 'message' => 'Member found',
-                'member' => $user
+                'member' => $user,
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            Log::error('Member confirm failed: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request' => $request->all(),
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while processing your request',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
-    public function unsubscribe(Request $request)
+    /**
+     * Mark a member as unsubscribed.
+     *
+     * NOTE: This endpoint trusts `member_id` and the provided OTP without
+     * re-verifying them against the cache. Consider validating the OTP via
+     * the `verify()` flow before allowing unsubscribe, or move OTP check
+     * here to prevent unauthorized changes.
+     *
+     * @param  Request  $request
+     * @return JsonResponse
+     */
+    public function unsubscribe(Request $request): JsonResponse
     {
         try {
             $request->validate([
                 'member_id' => 'required|integer|exists:users,id',
                 'otp' => 'required|string|size:6',
-                'verification_channel' => 'required|in:email,phone'
+                'verification_channel' => 'required|in:email,phone',
             ]);
 
-            // Find the user
             $user = User::findOrFail($request->member_id);
 
-            // Update user status
             $user->status = 'unsubscribed';
             $user->save();
 
             return response()->json([
                 'success' => true,
-                'message' => 'You have been successfully unsubscribed'
+                'message' => 'You have been successfully unsubscribed',
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            Log::error('Unsubscribe failed: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request' => $request->all(),
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while processing your request',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

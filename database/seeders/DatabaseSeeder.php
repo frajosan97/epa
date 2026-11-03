@@ -16,6 +16,12 @@ class DatabaseSeeder extends Seeder
         // Call other seeders if needed
         $this->call([
             KenyaAdministrativeUnitsSeeder::class,
+            CountrySeeder::class,
+            EventSeeder::class,
+            BlogSeeder::class,
+            GallerySeeder::class,
+            DownloadSeeder::class,
+            PublicationSeeder::class
         ]);
     }
 }

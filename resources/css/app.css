@@ -352,10 +352,8 @@ body {
 .hero-section {
     position: relative;
     height: 400px;
-    background: linear-gradient(
-            rgba(117, 11, 113, 0.85),
-            rgba(117, 11, 113, 0.95)
-        ),
+    background:
+        linear-gradient(rgba(117, 11, 113, 0.85), rgba(117, 11, 113, 0.95)),
         url("../../public/storage/images/bg/1.jpeg");
     background-size: cover;
     background-position: center;
@@ -434,7 +432,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(109, 0, 107, 0.658)!important;
+    background: rgba(109, 0, 107, 0.658) !important;
     z-index: 1050;
     display: flex;
     align-items: center;
@@ -498,4 +496,104 @@ body {
 
 .search-open .navbar-container {
     z-index: 1051;
+}
+
+/* resources/css/Publications.css */
+
+.publication-card {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.publication-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.publication-body {
+    line-height: 1.7;
+    font-size: 1rem;
+    color: #333;
+}
+
+.publication-body p {
+    margin-bottom: 1rem;
+}
+
+.publication-body strong {
+    font-weight: 600;
+}
+
+.publication-image img {
+    max-height: 400px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.publication-signature {
+    font-size: 0.95rem;
+}
+
+@media (max-width: 576px) {
+    .publication-card .card-body {
+        padding: 1.25rem !important;
+    }
+}
+
+@media print {
+    /* Hide everything by default */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Show only the printable publication card */
+    #publication-printable,
+    #publication-printable * {
+        visibility: visible;
+    }
+
+    /* Anchor the printable card to the top-left of the page */
+    #publication-printable {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    /* Hide anything explicitly marked no-print */
+    .no-print {
+        display: none !important;
+    }
+
+    /* Hide app chrome that may still take layout space */
+    nav,
+    footer,
+    .navbar,
+    .hero-banner {
+        display: none !important;
+    }
+
+    /* Clean page setup */
+    @page {
+        margin: 15mm;
+    }
+
+    body {
+        background: #fff !important;
+        color: #000 !important;
+        font-size: 12pt;
+    }
+
+    .publication-body a {
+        color: #000;
+        text-decoration: none;
+    }
+
+    /* Avoid page breaks inside signature block */
+    .publication-signature {
+        page-break-inside: avoid;
+    }
 }
