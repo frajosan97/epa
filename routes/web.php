@@ -41,4 +41,5 @@ Route::prefix('donation')->name('donation.')->group(function () {
     Route::get('/specialized', [DonationController::class, 'specialized'])->name('specialized');
 });
 
+// Auth routes
 require __DIR__ . '/auth.php';
