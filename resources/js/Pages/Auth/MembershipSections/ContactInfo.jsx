@@ -1,6 +1,6 @@
-import { Form, Row, Col, FloatingLabel, Button, Spinner, InputGroup } from 'react-bootstrap';
-import { BsTelephone, BsEnvelope, BsFillCheckCircleFill } from 'react-icons/bs';
-import { useEffect } from 'react';
+import { Form, Row, Col, Button, Spinner } from "react-bootstrap";
+import { BsTelephone, BsEnvelope, BsFillCheckCircleFill } from "react-icons/bs";
+import { useEffect } from "react";
 
 export default function ContactInformation({
     data,
@@ -9,28 +9,24 @@ export default function ContactInformation({
     phoneVerified,
     emailVerified,
     sendingOTP,
+    verifyingOTP,
     sendOTP,
     verifyOTP,
-    processing
+    onPhoneChange,
+    onEmailChange,
+    processing,
 }) {
-    // Set phone as default preferred channel if none is selected
     useEffect(() => {
-        if (!data.preferredChannel) {
-            setData('preferredChannel', 'phone');
-        }
+        if (!data.preferredChannel) setData("preferredChannel", "phone");
     }, [data.preferredChannel, setData]);
 
     const handlePreferredChannelChange = (channel) => {
-        setData('preferredChannel', channel);
-        if (channel === 'phone') {
-            setData('emailVerified', false);
-        } else {
-            setData('phoneVerified', false);
-        }
+        setData("preferredChannel", channel);
+        // Don't reset the other verification state — user may have verified both
     };
 
-    const isPreferredChannelPhone = data.preferredChannel === 'phone';
-    const isPreferredChannelEmail = data.preferredChannel === 'email';
+    const isPhone = data.preferredChannel === "phone";
+    const isEmail = data.preferredChannel === "email";
 
     return (
         <Col md={12} className="section-frame contact-information mb-5">
@@ -45,7 +41,9 @@ export default function ContactInformation({
                 <Row className="mb-3">
                     <Col md={12}>
                         <Form.Group>
-                            <Form.Label>Preferred Communication Channel</Form.Label>
+                            <Form.Label className="d-block mb-2 fw-semibold">
+                                Preferred Communication Channel
+                            </Form.Label>
                             <div>
                                 <Form.Check
                                     inline
@@ -53,9 +51,10 @@ export default function ContactInformation({
                                     label="Phone"
                                     name="preferredChannel"
                                     id="preferredChannel_phone"
-                                    checked={isPreferredChannelPhone}
-                                    onChange={() => handlePreferredChannelChange('phone')}
-                                    isInvalid={!!errors.preferredChannel}
+                                    checked={isPhone}
+                                    onChange={() =>
+                                        handlePreferredChannelChange("phone")
+                                    }
                                 />
                                 <Form.Check
                                     inline
@@ -63,39 +62,53 @@ export default function ContactInformation({
                                     label="Email"
                                     name="preferredChannel"
                                     id="preferredChannel_email"
-                                    checked={isPreferredChannelEmail}
-                                    onChange={() => handlePreferredChannelChange('email')}
-                                    isInvalid={!!errors.preferredChannel}
+                                    checked={isEmail}
+                                    onChange={() =>
+                                        handlePreferredChannelChange("email")
+                                    }
                                 />
                             </div>
-                            <Form.Control.Feedback type="invalid">
-                                {errors.preferredChannel}
-                            </Form.Control.Feedback>
+                            {errors.preferredChannel && (
+                                <Form.Text className="text-danger">
+                                    {errors.preferredChannel}
+                                </Form.Text>
+                            )}
                         </Form.Group>
                     </Col>
                 </Row>
 
+                {/* ---------- Phone ---------- */}
                 <Row>
                     <Col md={8}>
-                        <InputGroup className="mb-3">
-                            <FloatingLabel controlId="phone" label="Phone Number" style={{ flex: 1 }}>
+                        <Form.Group className="mb-3">
+                            <Form.Label className="d-block mb-2 fw-semibold">
+                                <BsTelephone className="me-2" />
+                                Phone Number
+                                {isPhone && (
+                                    <span className="text-danger"> *</span>
+                                )}
+                            </Form.Label>
+                            <div className="d-flex gap-2">
                                 <Form.Control
-                                    type="number"
+                                    type="tel"
                                     placeholder="e.g., 2547XXXXXXXX"
                                     value={data.phone}
-                                    onChange={(e) => setData('phone', e.target.value)}
+                                    onChange={(e) =>
+                                        onPhoneChange(e.target.value)
+                                    }
                                     isInvalid={!!errors.phone}
-                                    required={isPreferredChannelPhone}
+                                    disabled={phoneVerified}
+                                    required={isPhone}
                                 />
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.phone || (isPreferredChannelPhone && !phoneVerified ? 'Phone verification is required' : '')}
-                                </Form.Control.Feedback>
-                            </FloatingLabel>
-                            {isPreferredChannelPhone && (
                                 <Button
-                                    variant={phoneVerified ? "success" : "primary"}
-                                    onClick={() => phoneVerified ? null : sendOTP('phone')}
+                                    variant={
+                                        phoneVerified ? "success" : "primary"
+                                    }
+                                    onClick={() =>
+                                        phoneVerified ? null : sendOTP("phone")
+                                    }
                                     disabled={sendingOTP.phone || phoneVerified}
+                                    style={{ whiteSpace: "nowrap" }}
                                 >
                                     {sendingOTP.phone ? (
                                         <Spinner animation="border" size="sm" />
@@ -104,59 +117,96 @@ export default function ContactInformation({
                                     ) : (
                                         <BsTelephone className="me-1" />
                                     )}
-                                    {phoneVerified ? 'Verified' : 'Send OTP'}
+                                    {phoneVerified ? "Verified" : "Send OTP"}
                                 </Button>
+                            </div>
+                            {errors.phone && (
+                                <Form.Text className="text-danger">
+                                    {errors.phone}
+                                </Form.Text>
                             )}
-                        </InputGroup>
+                            {isPhone && !phoneVerified && !errors.phone && (
+                                <Form.Text className="text-muted">
+                                    Phone verification is required
+                                </Form.Text>
+                            )}
+                        </Form.Group>
                     </Col>
 
-                    {!phoneVerified && isPreferredChannelPhone && (
+                    {!phoneVerified && isPhone && (
                         <Col md={4}>
-                            <InputGroup className="mb-3">
-                                <FloatingLabel controlId="phoneOTP" label="Phone OTP Code" style={{ flex: 1 }}>
+                            <Form.Group className="mb-3">
+                                <Form.Label className="d-block mb-2 fw-semibold">
+                                    Phone OTP Code
+                                </Form.Label>
+                                <div className="d-flex gap-2">
                                     <Form.Control
                                         type="text"
-                                        placeholder="Enter 6-digit OTP Code"
+                                        placeholder="Enter 6-digit OTP"
                                         value={data.phoneOTP}
-                                        onChange={(e) => setData('phoneOTP', e.target.value)}
+                                        onChange={(e) =>
+                                            setData("phoneOTP", e.target.value)
+                                        }
                                         isInvalid={!!errors.phoneOTP}
                                     />
-                                    <Form.Control.Feedback type="invalid">
+                                    <Button
+                                        variant="outline-primary"
+                                        onClick={() => verifyOTP("phone")}
+                                        disabled={verifyingOTP.phone}
+                                        style={{ whiteSpace: "nowrap" }}
+                                    >
+                                        {verifyingOTP.phone ? (
+                                            <Spinner
+                                                animation="border"
+                                                size="sm"
+                                            />
+                                        ) : (
+                                            "Verify"
+                                        )}
+                                    </Button>
+                                </div>
+                                {errors.phoneOTP && (
+                                    <Form.Text className="text-danger">
                                         {errors.phoneOTP}
-                                    </Form.Control.Feedback>
-                                </FloatingLabel>
-                                <Button
-                                    variant="outline-primary"
-                                    onClick={() => verifyOTP('phone')}
-                                >
-                                    Verify OTP
-                                </Button>
-                            </InputGroup>
+                                    </Form.Text>
+                                )}
+                            </Form.Group>
                         </Col>
                     )}
                 </Row>
 
+                {/* ---------- Email ---------- */}
                 <Row>
                     <Col md={8}>
-                        <InputGroup className="mb-3">
-                            <FloatingLabel controlId="email" label="Email Address" style={{ flex: 1 }}>
+                        <Form.Group className="mb-3">
+                            <Form.Label className="d-block mb-2 fw-semibold">
+                                <BsEnvelope className="me-2" />
+                                Email Address
+                                {isEmail && (
+                                    <span className="text-danger"> *</span>
+                                )}
+                            </Form.Label>
+                            <div className="d-flex gap-2">
                                 <Form.Control
                                     type="email"
                                     placeholder="your.email@example.com"
                                     value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
+                                    onChange={(e) =>
+                                        onEmailChange(e.target.value)
+                                    }
                                     isInvalid={!!errors.email}
-                                    required={isPreferredChannelEmail}
+                                    disabled={emailVerified}
+                                    required={isEmail}
                                 />
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.email || (isPreferredChannelEmail && !emailVerified ? 'Email verification is required' : '')}
-                                </Form.Control.Feedback>
-                            </FloatingLabel>
-                            {isPreferredChannelEmail && (
                                 <Button
-                                    variant={emailVerified ? "success" : "primary"}
-                                    onClick={() => emailVerified ? null : sendOTP('email')}
+                                    variant={
+                                        emailVerified ? "success" : "primary"
+                                    }
+                                    onClick={() =>
+                                        emailVerified ? null : sendOTP("email")
+                                    }
                                     disabled={sendingOTP.email || emailVerified}
+                                    style={{ whiteSpace: "nowrap" }}
                                 >
                                     {sendingOTP.email ? (
                                         <Spinner animation="border" size="sm" />
@@ -165,34 +215,60 @@ export default function ContactInformation({
                                     ) : (
                                         <BsEnvelope className="me-1" />
                                     )}
-                                    {emailVerified ? 'Verified' : 'Send OTP'}
+                                    {emailVerified ? "Verified" : "Send OTP"}
                                 </Button>
+                            </div>
+                            {errors.email && (
+                                <Form.Text className="text-danger">
+                                    {errors.email}
+                                </Form.Text>
                             )}
-                        </InputGroup>
+                            {isEmail && !emailVerified && !errors.email && (
+                                <Form.Text className="text-muted">
+                                    Email verification is required
+                                </Form.Text>
+                            )}
+                        </Form.Group>
                     </Col>
 
-                    {!emailVerified && isPreferredChannelEmail && (
+                    {!emailVerified && isEmail && (
                         <Col md={4}>
-                            <InputGroup className="mb-3">
-                                <FloatingLabel controlId="emailOTP" label="Email OTP Code" style={{ flex: 1 }}>
+                            <Form.Group className="mb-3">
+                                <Form.Label className="d-block mb-2 fw-semibold">
+                                    Email OTP Code
+                                </Form.Label>
+                                <div className="d-flex gap-2">
                                     <Form.Control
                                         type="text"
-                                        placeholder="Enter 6-digit OTP Code"
+                                        placeholder="Enter 6-digit OTP"
                                         value={data.emailOTP}
-                                        onChange={(e) => setData('emailOTP', e.target.value)}
+                                        onChange={(e) =>
+                                            setData("emailOTP", e.target.value)
+                                        }
                                         isInvalid={!!errors.emailOTP}
                                     />
-                                    <Form.Control.Feedback type="invalid">
+                                    <Button
+                                        variant="outline-primary"
+                                        onClick={() => verifyOTP("email")}
+                                        disabled={verifyingOTP.email}
+                                        style={{ whiteSpace: "nowrap" }}
+                                    >
+                                        {verifyingOTP.email ? (
+                                            <Spinner
+                                                animation="border"
+                                                size="sm"
+                                            />
+                                        ) : (
+                                            "Verify"
+                                        )}
+                                    </Button>
+                                </div>
+                                {errors.emailOTP && (
+                                    <Form.Text className="text-danger">
                                         {errors.emailOTP}
-                                    </Form.Control.Feedback>
-                                </FloatingLabel>
-                                <Button
-                                    variant="outline-primary"
-                                    onClick={() => verifyOTP('email')}
-                                >
-                                    Verify OTP
-                                </Button>
-                            </InputGroup>
+                                    </Form.Text>
+                                )}
+                            </Form.Group>
                         </Col>
                     )}
                 </Row>

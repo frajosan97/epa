@@ -1,17 +1,26 @@
-import { Form, Row, Col, FloatingLabel, Spinner, } from 'react-bootstrap';
-import { BsGeoFill, } from 'react-icons/bs';
+import { Form, Row, Col, Spinner } from "react-bootstrap";
+import { BsGeoFill } from "react-icons/bs";
 
 export default function LocationInformation({
     data,
-    setData,
     errors,
     counties,
     constituencies,
     wards,
+    selectedCounty,
+    selectedConstituency,
+    selectedWard,
     locationLoading,
     handleCountyChange,
-    handleConstituencyChange
+    handleConstituencyChange,
+    handleWardChange,
+    SelectComponent,
+    selectStyles,
 }) {
+    const loadingCounties = locationLoading?.counties;
+    const loadingConstituencies = locationLoading?.constituencies;
+    const loadingWards = locationLoading?.wards;
+
     return (
         <Col md={12} className="section-frame location-information mb-5">
             <div className="title">
@@ -24,84 +33,88 @@ export default function LocationInformation({
             <div className="p-3">
                 <Row>
                     <Col md={4}>
-                        <FloatingLabel controlId="county" label="County" className="mb-3">
-                            <Form.Select
-                                value={data.county}
-                                onChange={(e) => handleCountyChange(e.target.value)}
-                                isInvalid={!!errors.county}
-                                required
-                                disabled={locationLoading.counties}
-                            >
-                                <option value="">Select County</option>
-                                {counties.map(county => (
-                                    <option key={county.id} value={county.id}>
-                                        {county.county_name}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                            {locationLoading.counties && (
-                                <div className="position-absolute end-0 top-0 mt-3 me-3">
-                                    <Spinner animation="border" size="sm" />
-                                </div>
+                        <Form.Group className="mb-3">
+                            <Form.Label className="d-block mb-2 fw-semibold">
+                                County
+                            </Form.Label>
+                            <div className="position-relative">
+                                <SelectComponent
+                                    options={counties}
+                                    value={selectedCounty}
+                                    onChange={handleCountyChange}
+                                    isLoading={loadingCounties}
+                                    isClearable
+                                    placeholder="Select County"
+                                    styles={selectStyles}
+                                />
+                                {loadingCounties && (
+                                    <div className="position-absolute end-0 top-50 translate-middle-y me-5 pe-4">
+                                        <Spinner animation="border" size="sm" />
+                                    </div>
+                                )}
+                            </div>
+                            {errors.county && (
+                                <Form.Text className="text-danger">
+                                    {errors.county}
+                                </Form.Text>
                             )}
-                            <Form.Control.Feedback type="invalid">
-                                {errors.county}
-                            </Form.Control.Feedback>
-                        </FloatingLabel>
+                        </Form.Group>
                     </Col>
 
                     <Col md={4}>
-                        <FloatingLabel controlId="constituency" label="Constituency" className="mb-3">
-                            <Form.Select
-                                value={data.constituency}
-                                onChange={(e) => handleConstituencyChange(e.target.value)}
-                                isInvalid={!!errors.constituency}
-                                required
-                                disabled={!data.county || locationLoading.constituencies}
-                            >
-                                <option value="">Select Constituency</option>
-                                {constituencies.map(constituency => (
-                                    <option key={constituency.id} value={constituency.id}>
-                                        {constituency.constituency_name}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                            {locationLoading.constituencies && (
-                                <div className="position-absolute end-0 top-0 mt-3 me-3">
-                                    <Spinner animation="border" size="sm" />
-                                </div>
+                        <Form.Group className="mb-3">
+                            <Form.Label className="d-block mb-2 fw-semibold">
+                                Constituency
+                            </Form.Label>
+                            <SelectComponent
+                                options={constituencies}
+                                value={selectedConstituency}
+                                onChange={handleConstituencyChange}
+                                isDisabled={
+                                    !data.county || loadingConstituencies
+                                }
+                                isLoading={loadingConstituencies}
+                                isClearable
+                                placeholder={
+                                    data.county
+                                        ? "Select Constituency"
+                                        : "Select county first"
+                                }
+                                styles={selectStyles}
+                            />
+                            {errors.constituency && (
+                                <Form.Text className="text-danger">
+                                    {errors.constituency}
+                                </Form.Text>
                             )}
-                            <Form.Control.Feedback type="invalid">
-                                {errors.constituency}
-                            </Form.Control.Feedback>
-                        </FloatingLabel>
+                        </Form.Group>
                     </Col>
 
                     <Col md={4}>
-                        <FloatingLabel controlId="ward" label="Ward" className="mb-3">
-                            <Form.Select
-                                value={data.ward}
-                                onChange={(e) => setData('ward', e.target.value)}
-                                isInvalid={!!errors.ward}
-                                required
-                                disabled={!data.constituency || locationLoading.wards}
-                            >
-                                <option value="">Select Ward</option>
-                                {wards.map(ward => (
-                                    <option key={ward.id} value={ward.id}>
-                                        {ward.ward_name}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                            {locationLoading.wards && (
-                                <div className="position-absolute end-0 top-0 mt-3 me-3">
-                                    <Spinner animation="border" size="sm" />
-                                </div>
+                        <Form.Group className="mb-3">
+                            <Form.Label className="d-block mb-2 fw-semibold">
+                                Ward
+                            </Form.Label>
+                            <SelectComponent
+                                options={wards}
+                                value={selectedWard}
+                                onChange={handleWardChange}
+                                isDisabled={!data.constituency || loadingWards}
+                                isLoading={loadingWards}
+                                isClearable
+                                placeholder={
+                                    data.constituency
+                                        ? "Select Ward"
+                                        : "Select constituency first"
+                                }
+                                styles={selectStyles}
+                            />
+                            {errors.ward && (
+                                <Form.Text className="text-danger">
+                                    {errors.ward}
+                                </Form.Text>
                             )}
-                            <Form.Control.Feedback type="invalid">
-                                {errors.ward}
-                            </Form.Control.Feedback>
-                        </FloatingLabel>
+                        </Form.Group>
                     </Col>
                 </Row>
             </div>

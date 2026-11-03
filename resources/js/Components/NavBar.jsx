@@ -87,7 +87,7 @@ export default function NavBar() {
 
             <Navbar
                 expand="lg"
-                className={`main-navbar p-0 ${searchOpen ? "search-open" : ""}`}
+                className={`main-navbar py-0 ${searchOpen ? "search-open" : ""}`}
                 bg="light"
             >
                 <Container className="navbar-container p-0">

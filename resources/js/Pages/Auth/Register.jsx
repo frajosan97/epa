@@ -1,482 +1,625 @@
-import { useState } from 'react';
-import { Form, Button, Container, ButtonGroup, Col, Spinner, Modal } from 'react-bootstrap';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import AppLayout from '@/Layouts/AppLayout';
-import { Head, useForm } from '@inertiajs/react';
-import useLocationData from '@/Hooks/useLocationData';
-import PersonalInfomation from './MembershipSections/PersonalInfo';
-import LocationInformation from './MembershipSections/LocationInfo';
-import ContactInformation from './MembershipSections/ContactInfo';
-import PrivacyPolicy from './MembershipSections/PrivacyPolicy';
-import HeroBanner from '@/Components/HeroBanner';
+import { useState, useCallback, useMemo } from "react";
+import { Form, Button, Container, Col, Spinner, Modal } from "react-bootstrap";
+import Select from "react-select";
+import axios from "axios";
+import Swal from "sweetalert2";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AppLayout from "@/Layouts/AppLayout";
+import { Head, useForm } from "@inertiajs/react";
+import useLocationData from "@/Hooks/useLocationData";
+import PersonalInformation from "./MembershipSections/PersonalInfo";
+import LocationInformation from "./MembershipSections/LocationInfo";
+import ContactInformation from "./MembershipSections/ContactInfo";
+import PrivacyPolicy from "./MembershipSections/PrivacyPolicy";
+
+const reactSelectStyles = {
+    control: (base) => ({ ...base, minHeight: 38, borderRadius: 6 }),
+    menu: (base) => ({ ...base, zIndex: 1000 }),
+    valueContainer: (base) => ({ ...base, padding: "2px 8px" }),
+};
 
 export default function MembershipRegistration() {
     const { data, setData, post, processing, errors, reset } = useForm({
-        idNumber: '',
-        sirName: '',
-        firstName: '',
-        lastName: '',
-        dob: '',
-        sex: '',
-        ethnicity: '',
+        idNumber: "",
+        sirName: "",
+        firstName: "",
+        lastName: "",
+        dob: "",
+        sex: "",
+        ethnicity: "",
         membershipCategory: [],
-        pwdNumber: '',
-        resideInKenya: 'Yes',
-        countryOfResidence: '',
-        religion: '',
-        county: '',
-        constituency: '',
-        ward: '',
-        preferredChannel: '',
-        phone: '',
-        phoneOTP: '',
-        email: '',
-        emailOTP: '',
-        privacyAcceptance: false
+        pwdNumber: "",
+        resideInKenya: "Yes",
+        countryOfResidence: "",
+        religion: "",
+        county: "",
+        constituency: "",
+        ward: "",
+        preferredChannel: "phone",
+        phone: "",
+        phoneOTP: "",
+        email: "",
+        emailOTP: "",
+        privacyAcceptance: false,
     });
 
     const [phoneVerified, setPhoneVerified] = useState(false);
     const [emailVerified, setEmailVerified] = useState(false);
-    const [sendingOTP, setSendingOTP] = useState({ phone: false, email: false });
+    const [sendingOTP, setSendingOTP] = useState({
+        phone: false,
+        email: false,
+    });
+    const [verifyingOTP, setVerifyingOTP] = useState({
+        phone: false,
+        email: false,
+    });
+
     const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [confirmMethod, setConfirmMethod] = useState('id');
-    const [confirmValue, setConfirmValue] = useState('');
+    const [confirmMethod, setConfirmMethod] = useState("id");
+    const [confirmValue, setConfirmValue] = useState("");
     const [isCheckingMembership, setIsCheckingMembership] = useState(false);
     const [memberInfo, setMemberInfo] = useState(null);
+
     const [unsubscribing, setUnsubscribing] = useState(false);
-    const [showUnsubscribeVerification, setShowUnsubscribeVerification] = useState(false);
-    const [unsubscribeOTP, setUnsubscribeOTP] = useState('');
+    const [showUnsubscribeVerification, setShowUnsubscribeVerification] =
+        useState(false);
+    const [unsubscribeOTP, setUnsubscribeOTP] = useState("");
     const [sendingUnsubscribeOTP, setSendingUnsubscribeOTP] = useState(false);
     const [unsubscribeOTPVerified, setUnsubscribeOTPVerified] = useState(false);
 
-    // Use the location data hook
     const {
         counties,
         constituencies,
         wards,
         countries,
         loading: locationLoading,
-        error: locationError,
         fetchConstituencies,
-        fetchWards
+        fetchWards,
     } = useLocationData(data.county, data.constituency);
 
-    // Handle county change
-    const handleCountyChange = (county) => {
-        setData('county', county);
-        setData('constituency', '');
-        setData('ward', '');
-        if (county) {
-            fetchConstituencies(county);
-        }
-    };
+    /* ------------------ helpers ------------------ */
+    const toastError = useCallback((prefix, err) => {
+        const msg =
+            err?.response?.data?.message || err?.message || "Unknown error";
+        toast.error(`${prefix}: ${msg}`);
+    }, []);
 
-    // Handle constituency change
-    const handleConstituencyChange = (constituency) => {
-        setData('constituency', constituency);
-        setData('ward', '');
-        if (constituency) {
-            fetchWards(constituency);
-        }
-    };
+    const findOption = useCallback(
+        (options, value) => options.find((o) => o.value === value) || null,
+        [],
+    );
 
-    const handleCheckboxChange = (e) => {
-        const { value, checked } = e.target;
-        let updatedCategories = [...data.membershipCategory];
+    /* ------------------ location ------------------ */
+    const handleCountyChange = useCallback(
+        (option) => {
+            const county = option?.value || "";
+            setData((prev) => ({
+                ...prev,
+                county,
+                constituency: "",
+                ward: "",
+            }));
+            if (county) fetchConstituencies(county);
+        },
+        [setData, fetchConstituencies],
+    );
 
-        if (checked) {
-            updatedCategories.push(value);
-        } else {
-            updatedCategories = updatedCategories.filter(cat => cat !== value);
-        }
+    const handleConstituencyChange = useCallback(
+        (option) => {
+            const constituency = option?.value || "";
+            setData((prev) => ({ ...prev, constituency, ward: "" }));
+            if (constituency) fetchWards(constituency);
+        },
+        [setData, fetchWards],
+    );
 
-        setData('membershipCategory', updatedCategories);
-    };
+    const handleWardChange = useCallback(
+        (option) => setData("ward", option?.value || ""),
+        [setData],
+    );
 
-    const sendOTP = async (type) => {
-        const field = type === 'phone' ? 'phone' : 'email';
-        if (!data[field]) {
-            toast.error(`Please enter your ${type} first`);
-            return;
-        }
+    /* ------------------ categories ------------------ */
+    const handleCheckboxChange = useCallback(
+        (e) => {
+            const { value, checked } = e.target;
+            const current = data.membershipCategory || [];
+            const updated = checked
+                ? [...current, value]
+                : current.filter((c) => c !== value);
+            setData("membershipCategory", updated);
+        },
+        [data.membershipCategory, setData],
+    );
 
-        setSendingOTP({ ...sendingOTP, [type]: true });
-
-        try {
-            const response = await axios.post(route('api.otp.send'), {
-                [field]: data[field],
-                type
-            });
-
-            if (response.data.success) {
-                toast.success(`OTP sent to your ${type}`);
-            } else {
-                toast.error(response.data.message || `Failed to send OTP`);
+    /* ------------------ OTP ------------------ */
+    const sendOTP = useCallback(
+        async (type) => {
+            const field = type === "phone" ? "phone" : "email";
+            if (!data[field]) {
+                toast.error(`Please enter your ${type} first`);
+                return;
             }
-        } catch (error) {
-            const errorMsg = error.response?.data?.message || error.message;
-            toast.error(`Failed to send OTP: ${errorMsg}`);
-        } finally {
-            setSendingOTP({ ...sendingOTP, [type]: false });
-        }
-    };
+            if (sendingOTP[type]) return;
 
-    const verifyOTP = async (type) => {
-        const otpField = type === 'phone' ? 'phoneOTP' : 'emailOTP';
-        if (!data[otpField]) {
-            toast.error(`Please enter the OTP code`);
-            return;
-        }
+            setSendingOTP((p) => ({ ...p, [type]: true }));
+            try {
+                const { data: res } = await axios.post(route("api.otp.send"), {
+                    [field]: data[field],
+                    type,
+                });
+                res.success
+                    ? toast.success(`OTP sent to your ${type}`)
+                    : toast.error(res.message || "Failed to send OTP");
+            } catch (err) {
+                toastError("Failed to send OTP", err);
+            } finally {
+                setSendingOTP((p) => ({ ...p, [type]: false }));
+            }
+        },
+        [data, sendingOTP, toastError],
+    );
 
-        try {
-            const response = await axios.post(route('api.otp.verify'), {
-                [type]: data[type === 'phone' ? 'phone' : 'email'],
-                otp: data[otpField],
-                type
-            });
+    const verifyOTP = useCallback(
+        async (type) => {
+            const otpField = type === "phone" ? "phoneOTP" : "emailOTP";
+            const addressField = type === "phone" ? "phone" : "email";
 
-            if (response.data.success) {
-                if (type === 'phone') {
-                    setPhoneVerified(true);
+            if (!data[otpField]) {
+                toast.error("Please enter the OTP code");
+                return;
+            }
+            if (verifyingOTP[type]) return;
+
+            setVerifyingOTP((p) => ({ ...p, [type]: true }));
+            try {
+                const { data: res } = await axios.post(
+                    route("api.otp.verify"),
+                    {
+                        [addressField]: data[addressField],
+                        otp: data[otpField],
+                        type,
+                    },
+                );
+                if (res.success) {
+                    type === "phone"
+                        ? setPhoneVerified(true)
+                        : setEmailVerified(true);
+                    toast.success(`${type} verified successfully!`);
                 } else {
-                    setEmailVerified(true);
+                    toast.error(res.message || "Verification failed");
                 }
-                toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} verified successfully!`);
-            } else {
-                toast.error(response.data.message || `Verification failed`);
+            } catch (err) {
+                toastError("Verification failed", err);
+            } finally {
+                setVerifyingOTP((p) => ({ ...p, [type]: false }));
             }
-        } catch (error) {
-            const errorMsg = error.response?.data?.message || error.message;
-            toast.error(`Verification failed: ${errorMsg}`);
-        }
-    };
+        },
+        [data, verifyingOTP, toastError],
+    );
 
-    const checkMembership = async () => {
+    const handlePhoneChange = useCallback(
+        (value) => {
+            setPhoneVerified(false);
+            setData("phoneOTP", "");
+            setData("phone", value);
+        },
+        [setData],
+    );
+
+    const handleEmailChange = useCallback(
+        (value) => {
+            setEmailVerified(false);
+            setData("emailOTP", "");
+            setData("email", value);
+        },
+        [setData],
+    );
+
+    /* ------------------ membership check ------------------ */
+    const resetConfirmModal = useCallback(() => {
+        setShowConfirmModal(false);
+        setMemberInfo(null);
+        setConfirmValue("");
+        setShowUnsubscribeVerification(false);
+        setUnsubscribeOTP("");
+        setUnsubscribeOTPVerified(false);
+    }, []);
+
+    const checkMembership = useCallback(async () => {
         if (!confirmValue) {
-            toast.error(`Please enter your ${confirmMethod === 'id' ? 'ID number' : 'phone number'}`);
+            toast.error(
+                `Please enter your ${confirmMethod === "id" ? "ID number" : "phone number"}`,
+            );
             return;
         }
-
         setIsCheckingMembership(true);
-
         try {
-            const response = await axios.post(route('api.confirm'), {
+            const { data: res } = await axios.post(route("api.confirm"), {
                 type: confirmMethod,
-                value: confirmValue
+                value: confirmValue,
             });
-
-            if (response.data.success) {
-                setMemberInfo(response.data.member);
-                toast.success('Member information retrieved successfully');
+            if (res.success) {
+                setMemberInfo(res.member);
+                toast.success("Member information retrieved successfully");
             } else {
-                toast.error(response.data.message || 'No member found with those details');
                 setMemberInfo(null);
+                toast.error(
+                    res.message || "No member found with those details",
+                );
             }
-        } catch (error) {
-            const errorMsg = error.response?.data?.message || error.message;
-            toast.error(`Error checking membership: ${errorMsg}`);
+        } catch (err) {
             setMemberInfo(null);
+            toastError("Error checking membership", err);
         } finally {
             setIsCheckingMembership(false);
         }
-    };
+    }, [confirmValue, confirmMethod, toastError]);
 
-    const sendUnsubscribeOTP = async () => {
+    /* ------------------ unsubscribe ------------------ */
+    const sendUnsubscribeOTP = useCallback(async () => {
         if (!memberInfo) return;
+        const channel =
+            memberInfo.prefered_channel === "email" ? "email" : "phone";
+        const address =
+            channel === "email" ? memberInfo.email : memberInfo.phone;
 
         setSendingUnsubscribeOTP(true);
-
         try {
-            const response = await axios.post(route('api.otp.send'), {
-                type: memberInfo.prefered_channel === 'email' ? 'email' : 'phone',
-                [memberInfo.prefered_channel === 'email' ? 'email' : 'phone']:
-                    memberInfo.prefered_channel === 'email' ? memberInfo.email : memberInfo.phone
+            const { data: res } = await axios.post(route("api.otp.send"), {
+                type: channel,
+                [channel]: address,
             });
-
-            if (response.data.success) {
-                toast.success(`OTP sent to your ${memberInfo.prefered_channel}`);
-            } else {
-                toast.error(response.data.message || `Failed to send OTP`);
-            }
-        } catch (error) {
-            const errorMsg = error.response?.data?.message || error.message;
-            toast.error(`Failed to send OTP: ${errorMsg}`);
+            res.success
+                ? toast.success(`OTP sent to your ${channel}`)
+                : toast.error(res.message || "Failed to send OTP");
+        } catch (err) {
+            toastError("Failed to send OTP", err);
         } finally {
             setSendingUnsubscribeOTP(false);
         }
-    };
+    }, [memberInfo, toastError]);
 
-    const verifyUnsubscribeOTP = async () => {
+    const verifyUnsubscribeOTP = useCallback(async () => {
         if (!unsubscribeOTP) {
-            toast.error('Please enter the OTP code');
+            toast.error("Please enter the OTP code");
             return;
         }
+        const channel =
+            memberInfo.prefered_channel === "email" ? "email" : "phone";
+        const address =
+            channel === "email" ? memberInfo.email : memberInfo.phone;
 
         try {
-            const response = await axios.post(route('api.otp.verify'), {
-                [memberInfo.prefered_channel === 'email' ? 'email' : 'phone']:
-                    memberInfo.prefered_channel === 'email' ? memberInfo.email : memberInfo.phone,
+            const { data: res } = await axios.post(route("api.otp.verify"), {
+                [channel]: address,
                 otp: unsubscribeOTP,
-                type: memberInfo.prefered_channel === 'email' ? 'email' : 'phone'
+                type: channel,
             });
-
-            if (response.data.success) {
+            if (res.success) {
                 setUnsubscribeOTPVerified(true);
-                toast.success('OTP verified successfully!');
+                toast.success("OTP verified successfully!");
             } else {
-                toast.error(response.data.message || `Verification failed`);
+                toast.error(res.message || "Verification failed");
             }
-        } catch (error) {
-            const errorMsg = error.response?.data?.message || error.message;
-            toast.error(`Verification failed: ${errorMsg}`);
+        } catch (err) {
+            toastError("Verification failed", err);
         }
-    };
+    }, [memberInfo, unsubscribeOTP, toastError]);
 
-    const handleUnsubscribe = async () => {
+    const handleUnsubscribe = useCallback(async () => {
         if (!memberInfo) return;
-
         const result = await Swal.fire({
-            title: 'Confirm Unsubscribe',
-            text: 'Are you sure you want to unsubscribe from our membership? This action cannot be undone.',
-            icon: 'warning',
+            title: "Confirm Unsubscribe",
+            text: "Are you sure you want to unsubscribe? This action cannot be undone.",
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonText: 'Yes, unsubscribe',
-            cancelButtonText: 'No, cancel',
-            reverseButtons: true
+            confirmButtonText: "Yes, unsubscribe",
+            cancelButtonText: "No, cancel",
+            reverseButtons: true,
         });
-
-        if (!result.isConfirmed) {
-            return;
-        }
+        if (!result.isConfirmed) return;
 
         setShowUnsubscribeVerification(true);
         await sendUnsubscribeOTP();
-    };
+    }, [memberInfo, sendUnsubscribeOTP]);
 
-    const confirmUnsubscribe = async () => {
+    const confirmUnsubscribe = useCallback(async () => {
         if (!unsubscribeOTPVerified) {
-            toast.error('Please verify the OTP first');
+            toast.error("Please verify the OTP first");
             return;
         }
-
         setUnsubscribing(true);
-
         try {
-            const response = await axios.post(route('api.unsubscribe'), {
+            const { data: res } = await axios.post(route("api.unsubscribe"), {
                 member_id: memberInfo.id,
                 otp: unsubscribeOTP,
-                verification_channel: memberInfo.prefered_channel
+                verification_channel: memberInfo.prefered_channel,
             });
-
-            if (response.data.success) {
-                toast.success('You have been unsubscribed successfully');
-                setMemberInfo(null);
-                setConfirmValue('');
-                setShowUnsubscribeVerification(false);
-                setShowConfirmModal(false);
-                setUnsubscribeOTP('');
-                setUnsubscribeOTPVerified(false);
+            if (res.success) {
+                toast.success("You have been unsubscribed successfully");
+                resetConfirmModal();
             } else {
-                toast.error(response.data.message || 'Failed to unsubscribe');
+                toast.error(res.message || "Failed to unsubscribe");
             }
-        } catch (error) {
-            const errorMsg = error.response?.data?.message || error.message;
-            toast.error(`Unsubscribe failed: ${errorMsg}`);
+        } catch (err) {
+            toastError("Unsubscribe failed", err);
         } finally {
             setUnsubscribing(false);
         }
-    };
+    }, [
+        unsubscribeOTPVerified,
+        memberInfo,
+        unsubscribeOTP,
+        resetConfirmModal,
+        toastError,
+    ]);
 
-    const submit = async (e) => {
-        e.preventDefault();
+    /* ------------------ submit ------------------ */
+    const submit = useCallback(
+        async (e) => {
+            e.preventDefault();
 
-        if (!phoneVerified) {
-            toast.error('Please verify your phone number first');
-            return;
-        }
+            if (data.preferredChannel === "phone" && !phoneVerified) {
+                toast.error("Please verify your phone number first");
+                return;
+            }
+            if (data.preferredChannel === "email" && !emailVerified) {
+                toast.error("Please verify your email address first");
+                return;
+            }
+            if (!data.privacyAcceptance) {
+                toast.error("You must accept the privacy statement");
+                return;
+            }
 
-        if (!data.privacyAcceptance) {
-            toast.error('You must accept the privacy statement');
-            return;
-        }
+            const result = await Swal.fire({
+                title: "Confirm Submission",
+                text: "Are you sure you want to submit your membership registration?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Yes, submit!",
+                cancelButtonText: "No, cancel",
+                reverseButtons: true,
+            });
+            if (!result.isConfirmed) return;
 
-        const result = await Swal.fire({
-            title: 'Confirm Submission',
-            text: 'Are you sure you want to submit your membership registration?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, submit!',
-            cancelButtonText: 'No, cancel',
-            reverseButtons: true
-        });
-
-        if (!result.isConfirmed) {
-            return;
-        }
-
-        try {
-            await post(route('register'), {
+            post(route("register"), {
                 onSuccess: () => {
                     Swal.fire({
-                        title: 'Success!',
-                        text: 'Your membership registration was successful.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
+                        title: "Success!",
+                        text: "Your membership registration was successful.",
+                        icon: "success",
+                        confirmButtonText: "OK",
                     });
                     reset();
+                    setPhoneVerified(false);
+                    setEmailVerified(false);
                 },
-                onError: (errors) => {
-                    let errorMessage = 'There were errors with your submission.';
-                    if (errors && typeof errors === 'object') {
-                        errorMessage = Object.values(errors).join('\n');
-                    }
-                    toast.error(errorMessage);
-                }
+                onError: (errs) => {
+                    const msg =
+                        errs && typeof errs === "object"
+                            ? Object.values(errs).join("\n")
+                            : "There were errors with your submission.";
+                    toast.error(msg);
+                },
             });
-        } catch (error) {
-            toast.error('An unexpected error occurred. Please try again.');
-        }
-    };
+        },
+        [
+            phoneVerified,
+            emailVerified,
+            data.preferredChannel,
+            data.privacyAcceptance,
+            post,
+            reset,
+        ],
+    );
+
+    /* ------------------ memoized options ------------------ */
+    const countyOptions = useMemo(
+        () =>
+            (counties || []).map((c) => ({
+                value: c.id,
+                label: c.county_name,
+            })),
+        [counties],
+    );
+    const constituencyOptions = useMemo(
+        () =>
+            (constituencies || []).map((c) => ({
+                value: c.id,
+                label: c.constituency_name,
+            })),
+        [constituencies],
+    );
+    const wardOptions = useMemo(
+        () => (wards || []).map((w) => ({ value: w.id, label: w.ward_name })),
+        [wards],
+    );
+    const countryOptions = useMemo(
+        () => (countries || []).map((c) => ({ value: c, label: c })),
+        [countries],
+    );
 
     return (
         <AppLayout>
             <Head title="Membership Registration" />
-
             <ToastContainer
                 position="top-right"
                 autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
                 pauseOnHover
+                draggable
             />
 
-            {/* Hero Section */}
-            {/* <HeroBanner data={{
-                title: "Join EPA today",
-                subtitle: "Become member at EPA and enjoy plenty of benefits"
-            }} /> */}
+            <Container className="py-5">
+                <Col md={9} className="mx-auto">
+                    <blockquote className="border-start border-5 border-warning p-2 rounded-0 bg-light mb-5">
+                        <h5>
+                            <strong>Instructions</strong>
+                        </h5>
+                        <ol>
+                            <li>
+                                Please also ensure you have unblocked
+                                promotional messages by dialling{" "}
+                                <strong>*456*9*5*5*1#</strong> from your
+                                Safaricom or Airtel line
+                            </li>
+                            <li>
+                                You will receive a verification sms immediately
+                                you register.
+                            </li>
+                            <li>
+                                <Button
+                                    variant="link"
+                                    className="p-0 text-decoration-none"
+                                    onClick={() => setShowConfirmModal(true)}
+                                >
+                                    Confirm Your Membership
+                                </Button>{" "}
+                                if you had registered with us
+                            </li>
+                        </ol>
+                    </blockquote>
 
-            <Container className='py-5'>
-                <blockquote className='border-start border-5 border-warning p-2 rounded bg-light mb-5'>
-                    <h5>Instructions</h5>
-                    <ol>
-                        <li>Please also ensure you have unblocked promotional messages by dialling <strong>*456*9*5*5*1#</strong> from your Safaricom or Airtel line</li>
-                        <li>You will receive a verification sms immediately you register.</li>
-                        <li>
-                            <Button
-                                variant="link"
-                                className="p-0 text-decoration-none"
-                                onClick={() => setShowConfirmModal(true)}
-                            >
-                                Confirm Your Membership
-                            </Button> if you had registered with us
-                        </li>
-                    </ol>
-                </blockquote>
+                    <Form onSubmit={submit} noValidate>
+                        <PersonalInformation
+                            data={data}
+                            setData={setData}
+                            errors={errors}
+                            handleCheckboxChange={handleCheckboxChange}
+                            countries={countryOptions}
+                            SelectComponent={Select}
+                            selectStyles={reactSelectStyles}
+                        />
 
-                <Form onSubmit={submit}>
-                    <PersonalInfomation
-                        data={data}
-                        setData={setData}
-                        errors={errors}
-                        handleCheckboxChange={handleCheckboxChange}
-                        countries={countries}
-                    />
-
-                    <LocationInformation
-                        data={data}
-                        setData={setData}
-                        errors={errors}
-                        counties={counties}
-                        constituencies={constituencies}
-                        wards={wards}
-                        locationLoading={locationLoading}
-                        handleCountyChange={handleCountyChange}
-                        handleConstituencyChange={handleConstituencyChange}
-                    />
-
-                    <ContactInformation
-                        data={data}
-                        setData={setData}
-                        errors={errors}
-                        phoneVerified={phoneVerified}
-                        emailVerified={emailVerified}
-                        sendingOTP={sendingOTP}
-                        sendOTP={sendOTP}
-                        verifyOTP={verifyOTP}
-                        processing={processing}
-                    />
-
-                    <PrivacyPolicy
-                        data={data}
-                        setData={setData}
-                        errors={errors}
-                    />
-
-                    <Col>
-                        <Button
-                            variant="primary"
-                            size="lg"
-                            type="submit"
-                            disabled={processing}
-                        >
-                            {processing ? (
-                                <>
-                                    <Spinner animation="border" size="sm" className="me-2" />
-                                    Submitting...
-                                </>
-                            ) : (
-                                'Submit Registration'
+                        <LocationInformation
+                            data={data}
+                            setData={setData}
+                            errors={errors}
+                            counties={countyOptions}
+                            constituencies={constituencyOptions}
+                            wards={wardOptions}
+                            selectedCounty={findOption(
+                                countyOptions,
+                                data.county,
                             )}
-                        </Button>
-                    </Col>
-                </Form>
+                            selectedConstituency={findOption(
+                                constituencyOptions,
+                                data.constituency,
+                            )}
+                            selectedWard={findOption(wardOptions, data.ward)}
+                            locationLoading={locationLoading}
+                            handleCountyChange={handleCountyChange}
+                            handleConstituencyChange={handleConstituencyChange}
+                            handleWardChange={handleWardChange}
+                            SelectComponent={Select}
+                            selectStyles={reactSelectStyles}
+                        />
 
-                {/* Confirm Membership Modal */}
-                <Modal centered show={showConfirmModal} onHide={() => {
-                    setShowConfirmModal(false);
-                    setMemberInfo(null);
-                    setConfirmValue('');
-                }}>
+                        <ContactInformation
+                            data={data}
+                            setData={setData}
+                            errors={errors}
+                            phoneVerified={phoneVerified}
+                            emailVerified={emailVerified}
+                            sendingOTP={sendingOTP}
+                            verifyingOTP={verifyingOTP}
+                            sendOTP={sendOTP}
+                            verifyOTP={verifyOTP}
+                            onPhoneChange={handlePhoneChange}
+                            onEmailChange={handleEmailChange}
+                            processing={processing}
+                        />
+
+                        <PrivacyPolicy
+                            data={data}
+                            setData={setData}
+                            errors={errors}
+                            processing={processing}
+                        />
+
+                        <Col className="mt-4">
+                            <Button
+                                variant="primary"
+                                size="lg"
+                                type="submit"
+                                disabled={processing}
+                            >
+                                {processing ? (
+                                    <>
+                                        <Spinner
+                                            animation="border"
+                                            size="sm"
+                                            className="me-2"
+                                        />
+                                        Submitting...
+                                    </>
+                                ) : (
+                                    "Submit Registration"
+                                )}
+                            </Button>
+                        </Col>
+                    </Form>
+                </Col>
+
+                {/* ---- Confirm Membership Modal ---- */}
+                <Modal
+                    centered
+                    show={showConfirmModal}
+                    onHide={resetConfirmModal}
+                >
                     <Modal.Header closeButton>
                         <Modal.Title>Confirm Membership</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <Form>
                             <Form.Group className="mb-3">
-                                <Form.Label>Search by:</Form.Label>
-                                <ButtonGroup className="w-100">
+                                <Form.Label className="d-block mb-2 fw-semibold">
+                                    Search by
+                                </Form.Label>
+                                <div className="d-flex gap-2">
                                     <Button
-                                        variant={confirmMethod === 'id' ? 'primary' : 'outline-primary'}
-                                        onClick={() => setConfirmMethod('id')}
+                                        className="flex-fill"
+                                        variant={
+                                            confirmMethod === "id"
+                                                ? "primary"
+                                                : "outline-primary"
+                                        }
+                                        onClick={() => setConfirmMethod("id")}
                                     >
                                         ID Number
                                     </Button>
                                     <Button
-                                        variant={confirmMethod === 'phone' ? 'primary' : 'outline-primary'}
-                                        onClick={() => setConfirmMethod('phone')}
+                                        className="flex-fill"
+                                        variant={
+                                            confirmMethod === "phone"
+                                                ? "primary"
+                                                : "outline-primary"
+                                        }
+                                        onClick={() =>
+                                            setConfirmMethod("phone")
+                                        }
                                     >
                                         Phone Number
                                     </Button>
-                                </ButtonGroup>
+                                </div>
                             </Form.Group>
 
                             <Form.Group className="mb-3">
-                                <Form.Label>
-                                    {confirmMethod === 'id' ? 'ID Number' : 'Phone Number'}
+                                <Form.Label className="d-block mb-2 fw-semibold">
+                                    {confirmMethod === "id"
+                                        ? "ID Number"
+                                        : "Phone Number"}
                                 </Form.Label>
                                 <Form.Control
-                                    type={confirmMethod === 'id' ? 'text' : 'tel'}
+                                    type={
+                                        confirmMethod === "id" ? "text" : "tel"
+                                    }
                                     value={confirmValue}
-                                    onChange={(e) => setConfirmValue(e.target.value)}
-                                    placeholder={`Enter your ${confirmMethod === 'id' ? 'national ID' : 'phone number'}`}
+                                    onChange={(e) =>
+                                        setConfirmValue(e.target.value)
+                                    }
+                                    placeholder={`Enter your ${confirmMethod === "id" ? "national ID" : "phone number"}`}
                                 />
                             </Form.Group>
 
@@ -484,12 +627,32 @@ export default function MembershipRegistration() {
                                 <div className="alert alert-success border-0 border-start border-5 border-success mt-3">
                                     <h4>Member Found</h4>
                                     <hr />
-                                    <p><strong>Name:</strong> <span className="text-capitalize">{`${memberInfo.sir_name} ${memberInfo.first_name} ${memberInfo.last_name}`}</span></p>
-                                    <p><strong>ID Number:</strong> {memberInfo.id_number}</p>
-                                    <p><strong>Phone:</strong> {memberInfo.phone}</p>
-                                    <p><strong>Email:</strong> {memberInfo.email}</p>
-                                    <p><strong>Preferred Channel:</strong> {memberInfo.prefered_channel}</p>
-                                    <p><strong>Membership Status:</strong> {memberInfo.status}</p>
+                                    <p>
+                                        <strong>Name:</strong>{" "}
+                                        <span className="text-capitalize">
+                                            {`${memberInfo.sir_name} ${memberInfo.first_name} ${memberInfo.last_name}`}
+                                        </span>
+                                    </p>
+                                    <p>
+                                        <strong>ID Number:</strong>{" "}
+                                        {memberInfo.id_number}
+                                    </p>
+                                    <p>
+                                        <strong>Phone:</strong>{" "}
+                                        {memberInfo.phone}
+                                    </p>
+                                    <p>
+                                        <strong>Email:</strong>{" "}
+                                        {memberInfo.email}
+                                    </p>
+                                    <p>
+                                        <strong>Preferred Channel:</strong>{" "}
+                                        {memberInfo.prefered_channel}
+                                    </p>
+                                    <p>
+                                        <strong>Membership Status:</strong>{" "}
+                                        {memberInfo.status}
+                                    </p>
 
                                     <Button
                                         variant="danger"
@@ -499,11 +662,15 @@ export default function MembershipRegistration() {
                                     >
                                         {unsubscribing ? (
                                             <>
-                                                <Spinner animation="border" size="sm" className="me-2" />
+                                                <Spinner
+                                                    animation="border"
+                                                    size="sm"
+                                                    className="me-2"
+                                                />
                                                 Unsubscribing...
                                             </>
                                         ) : (
-                                            'Unsubscribe from Membership'
+                                            "Unsubscribe from Membership"
                                         )}
                                     </Button>
                                 </div>
@@ -513,11 +680,7 @@ export default function MembershipRegistration() {
                     <Modal.Footer>
                         <Button
                             variant="outline-secondary"
-                            onClick={() => {
-                                setShowConfirmModal(false);
-                                setMemberInfo(null);
-                                setConfirmValue('');
-                            }}
+                            onClick={resetConfirmModal}
                         >
                             Close
                         </Button>
@@ -528,79 +691,98 @@ export default function MembershipRegistration() {
                         >
                             {isCheckingMembership ? (
                                 <>
-                                    <Spinner animation="border" size="sm" className="me-2" />
+                                    <Spinner
+                                        animation="border"
+                                        size="sm"
+                                        className="me-2"
+                                    />
                                     Checking...
                                 </>
                             ) : (
-                                'Check Membership'
+                                "Check Membership"
                             )}
                         </Button>
                     </Modal.Footer>
                 </Modal>
 
-                {/* Unsubscribe Verification Modal */}
-                <Modal centered show={showUnsubscribeVerification} onHide={() => {
-                    setShowUnsubscribeVerification(false);
-                    setUnsubscribeOTP('');
-                    setUnsubscribeOTPVerified(false);
-                }}>
+                {/* ---- Unsubscribe Verification Modal ---- */}
+                <Modal
+                    centered
+                    show={showUnsubscribeVerification}
+                    onHide={() => {
+                        setShowUnsubscribeVerification(false);
+                        setUnsubscribeOTP("");
+                        setUnsubscribeOTPVerified(false);
+                    }}
+                >
                     <Modal.Header closeButton>
                         <Modal.Title>Verify Unsubscription</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Form>
-                            <p className="mb-4">
-                                We've sent a verification code to your {memberInfo?.prefered_channel}.
-                                Please enter it below to confirm your unsubscription.
-                            </p>
-
-                            <Form.Group className="mb-3">
-                                <Form.Label>Verification Code</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={unsubscribeOTP}
-                                    onChange={(e) => setUnsubscribeOTP(e.target.value)}
-                                    placeholder={`Enter OTP sent to your ${memberInfo?.prefered_channel}`}
-                                    disabled={unsubscribeOTPVerified}
-                                />
-                            </Form.Group>
-
-                            <div className="d-flex justify-content-between align-items-center">
-                                <Button
-                                    variant="outline-secondary"
-                                    onClick={sendUnsubscribeOTP}
-                                    disabled={sendingUnsubscribeOTP || unsubscribeOTPVerified}
-                                >
-                                    {sendingUnsubscribeOTP ? (
-                                        <>
-                                            <Spinner animation="border" size="sm" className="me-2" />
-                                            Resending...
-                                        </>
-                                    ) : (
-                                        'Resend OTP'
-                                    )}
-                                </Button>
-
-                                <Button
-                                    variant={unsubscribeOTPVerified ? 'success' : 'primary'}
-                                    onClick={verifyUnsubscribeOTP}
-                                    disabled={unsubscribeOTPVerified || !unsubscribeOTP}
-                                >
-                                    {unsubscribeOTPVerified ? (
-                                        'Verified ✓'
-                                    ) : (
-                                        'Verify OTP'
-                                    )}
-                                </Button>
-                            </div>
-                        </Form>
+                        <p className="mb-4">
+                            We&apos;ve sent a verification code to your{" "}
+                            {memberInfo?.prefered_channel}. Please enter it
+                            below to confirm your unsubscription.
+                        </p>
+                        <Form.Group className="mb-3">
+                            <Form.Label className="d-block mb-2 fw-semibold">
+                                Verification Code
+                            </Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={unsubscribeOTP}
+                                onChange={(e) =>
+                                    setUnsubscribeOTP(e.target.value)
+                                }
+                                placeholder={`Enter OTP sent to your ${memberInfo?.prefered_channel}`}
+                                disabled={unsubscribeOTPVerified}
+                            />
+                        </Form.Group>
+                        <div className="d-flex justify-content-between align-items-center">
+                            <Button
+                                variant="outline-secondary"
+                                onClick={sendUnsubscribeOTP}
+                                disabled={
+                                    sendingUnsubscribeOTP ||
+                                    unsubscribeOTPVerified
+                                }
+                            >
+                                {sendingUnsubscribeOTP ? (
+                                    <>
+                                        <Spinner
+                                            animation="border"
+                                            size="sm"
+                                            className="me-2"
+                                        />
+                                        Resending...
+                                    </>
+                                ) : (
+                                    "Resend OTP"
+                                )}
+                            </Button>
+                            <Button
+                                variant={
+                                    unsubscribeOTPVerified
+                                        ? "success"
+                                        : "primary"
+                                }
+                                onClick={verifyUnsubscribeOTP}
+                                disabled={
+                                    unsubscribeOTPVerified || !unsubscribeOTP
+                                }
+                            >
+                                {unsubscribeOTPVerified
+                                    ? "Verified ✓"
+                                    : "Verify OTP"}
+                            </Button>
+                        </div>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button
                             variant="outline-secondary"
                             onClick={() => {
                                 setShowUnsubscribeVerification(false);
-                                setUnsubscribeOTP('');
+                                setUnsubscribeOTP("");
                                 setUnsubscribeOTPVerified(false);
                             }}
                         >
@@ -613,11 +795,15 @@ export default function MembershipRegistration() {
                         >
                             {unsubscribing ? (
                                 <>
-                                    <Spinner animation="border" size="sm" className="me-2" />
+                                    <Spinner
+                                        animation="border"
+                                        size="sm"
+                                        className="me-2"
+                                    />
                                     Processing...
                                 </>
                             ) : (
-                                'Confirm Unsubscribe'
+                                "Confirm Unsubscribe"
                             )}
                         </Button>
                     </Modal.Footer>
