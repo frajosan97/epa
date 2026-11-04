@@ -12,9 +12,9 @@ class PublicationSeeder extends Seeder
         $publications = [
             [
                 'type' => 'public-notice',
-                'reference_no' => 'EPA/PN/2025/001',
+                'reference_no' => 'EPA/PN/2026/001',
                 'title' => 'PUBLIC NOTICE',
-                'subtitle' => 'EXPANSION OF EPA COUNTY OFFICES ACROSS KENYA',
+                'subtitle' => 'OPENING OF EPA COUNTY OFFICES IN 24 COUNTIES',
                 'organization' => 'Economic Patriotic Alliance (EPA)',
                 'summary' => 'EPA has successfully established and operationalized offices in 24 counties across Kenya, with plans underway to cover all 47 counties.',
                 'body' => <<<'HTML'
@@ -35,7 +35,7 @@ HTML,
                 'location' => null,
                 'image' => null,
                 'file_path' => null,
-                'published_at' => '2025-07-05 09:00:00', // adjust to actual publication date
+                'published_at' => '2026-11-04 09:00:00',
                 'is_published' => true,
             ],
         ];
