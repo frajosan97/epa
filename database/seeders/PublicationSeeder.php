@@ -35,7 +35,7 @@ HTML,
                 'location' => null,
                 'image' => null,
                 'file_path' => null,
-                'published_at' => '2026-11-04 09:00:00',
+                'published_at' => now(),
                 'is_published' => true,
             ],
         ];
